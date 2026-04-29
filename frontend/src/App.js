@@ -11,7 +11,7 @@ const App = () => {
         <Container>
           <HomeScreen />
         </Container>
-      </main>      
+      </main>
       <Footer />
     </>
   );
