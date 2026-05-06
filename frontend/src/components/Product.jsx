@@ -1,33 +1,38 @@
-import { Card, CardBody, CardText } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
-import Rating  from './Rating'
+import { Card } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
+import Rating from './Rating';
 
-export const Product = ( { Product }) => {
+const Product = ({ Product: product }) => {
   return (
     <Card className='my-3 p-3 rounded h-90'>
-      <Link to={`/product/${Product._id}`}>
+      <Link to={`/product/${product._id}`}>
         <Card.Img
-          src={Product.image}
+          src={product.image}
           variant='top'
           style={{ height: '200px', objectFit: 'contain' }}
         />
       </Link>
-      <CardBody>
-        <Link to={`/product/${Product._id}`}>
+
+      <Card.Body>
+        <Link to={`/product/${product._id}`}>
           <Card.Title as='div' className='product-title'>
-            <strong>{Product.name}</strong>
+            <strong>{product.name}</strong>
           </Card.Title>
         </Link>
 
         <Card.Text as='div'>
-          <Rating value={ Product.rating } text={`${Product.numReviews}
-          відгуків`} />
+          <Rating
+            value={product.rating}
+            text={`${product.numReviews} відгуків`}
+          />
         </Card.Text>
 
-        <CardText as="h3">
-          {Product.price} грн.
-        </CardText>
-      </CardBody>
+        <Card.Text as='h3'>
+          {product.price.toLocaleString('uk-UA')} грн
+        </Card.Text>
+      </Card.Body>
     </Card>
-  )
-}
+  );
+};
+
+export default Product;
