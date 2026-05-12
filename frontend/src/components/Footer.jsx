@@ -1,5 +1,5 @@
 import { Container, Row, Col } from 'react-bootstrap';
-import { FaMapMarkerAlt, FaPhone, FaEnvelope } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaPhone, FaInstagram, FaFacebookF, FaTiktok } from 'react-icons/fa';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -14,6 +14,35 @@ const Footer = () => {
               Інтернет-магазин сантехніки та обладнання для ванної кімнати.
               Якісні товари від провідних виробників.
             </p>
+            <div className='footer-socials'>
+              <a
+                href='https://www.instagram.com/santekh_studia?igsh=MTNhYnU5anNpeGp6NQ=='
+                target='_blank'
+                rel='noopener noreferrer'
+                className='footer-social-btn'
+                aria-label='Instagram'
+              >
+                <FaInstagram />
+              </a>
+              <a
+                href='https://www.facebook.com/share/1NuuuUnTRC/?mibextid=wwXIfr'
+                target='_blank'
+                rel='noopener noreferrer'
+                className='footer-social-btn'
+                aria-label='Facebook'
+              >
+                <FaFacebookF />
+              </a>
+              <a
+                href='https://www.tiktok.com/@santekh.studiia?_r=1&_t=ZS-96IYqiEdBNk'
+                target='_blank'
+                rel='noopener noreferrer'
+                className='footer-social-btn'
+                aria-label='TikTok'
+              >
+                <FaTiktok />
+              </a>
+            </div>
           </Col>
 
           {/* Навігація */}
@@ -24,6 +53,13 @@ const Footer = () => {
               <li><a href='/search/Змішувачі'>Змішувачі</a></li>
               <li><a href='/search/Унітази'>Унітази</a></li>
               <li><a href='/search/Ванни'>Ванни</a></li>
+              <li><a href='/search/Душові набори'>Душові набори</a></li>
+              <li><a href='/search/Душові кабіни'>Душові кабіни</a></li>
+              <li><a href='/search/Аксесуари для ванної кімнати'>Аксесуари для ванної</a></li>
+              <li><a href='/search/Водовідведення'>Водовідведення</a></li>
+              <li><a href='/search/Тепла підлога'>Тепла підлога</a></li>
+              <li><a href='/search/Дзеркала'>Дзеркала</a></li>
+              <li><a href='/search/Кухонні мийки'>Кухонні мийки</a></li>
             </ul>
           </Col>
 
@@ -38,16 +74,12 @@ const Footer = () => {
                   target='_blank'
                   rel='noopener noreferrer'
                 >
-                  Львів, вул. Городоцька, 222
+                  м.Львів, вул.Городоцька 226а (ЖК Resident Hall)
                 </a>
               </li>
               <li>
                 <FaPhone className='footer-icon' />
-                <a href='tel:+380981234567'>+38 (098) 123-45-67</a>
-              </li>
-              <li>
-                <FaEnvelope className='footer-icon' />
-                <a href='mailto:info@santexstudio.ua'>info@santexstudio.ua</a>
+                <a href='tel:+380678029439'>+38 (067) 802-94-39</a>
               </li>
             </ul>
 
@@ -57,7 +89,7 @@ const Footer = () => {
               rel='noopener noreferrer'
               className='footer-map-btn'
             >
-              Відкрити на картах →
+              Відкрити у картах →
             </a>
           </Col>
         </Row>

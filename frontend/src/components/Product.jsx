@@ -4,18 +4,18 @@ import Rating from './Rating';
 
 const Product = ({ Product: product }) => {
   return (
-    <Card className='my-3 p-3 rounded h-90'>
-      <Link to={`/product/${product._id}`}>
+    <Card className='my-3 product-card'>
+      <Link to={`/product/${product._id}`} style={{ textDecoration: 'none' }}>
         <Card.Img
           src={product.image}
           variant='top'
-          style={{ height: '200px', objectFit: 'contain' }}
+          style={{ height: '200px', objectFit: 'contain', padding: '12px' }}
         />
       </Link>
 
       <Card.Body>
-        <Link to={`/product/${product._id}`}>
-          <Card.Title as='div' className='product-title'>
+        <Link to={`/product/${product._id}`} className='product-card-title'>
+          <Card.Title as='div' className='product-title mb-2'>
             <strong>{product.name}</strong>
           </Card.Title>
         </Link>
@@ -27,9 +27,9 @@ const Product = ({ Product: product }) => {
           />
         </Card.Text>
 
-        <Card.Text as='h3'>
+        <p className='product-price mb-0'>
           {product.price.toLocaleString('uk-UA')} грн
-        </Card.Text>
+        </p>
       </Card.Body>
     </Card>
   );

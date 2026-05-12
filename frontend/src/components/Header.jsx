@@ -27,20 +27,19 @@ const Header = () => {
   };
 
   return (
-    <header>
-      <Navbar bg='dark' variant='dark' expand='md' collapseOnSelect>
+    <header className='site-header'>
+      <Navbar expand='md' collapseOnSelect className='navbar-custom'>
         <Container>
           <LinkContainer to='/'>
             <Navbar.Brand>
-              <img src={logo} alt='Сантех Студія' height='80' />
+              <img src={logo} alt='Сантех Студія' height='46' />
               Сантех Студія
             </Navbar.Brand>
           </LinkContainer>
 
           <Navbar.Toggle aria-controls='basic-navbar-nav' />
           <Navbar.Collapse id='basic-navbar-nav'>
-            <Nav className='ms-auto'>
-              {/* Кошик з лічильником */}
+            <Nav className='ms-auto align-items-center'>
               <LinkContainer to='/cart'>
                 <Nav.Link>
                   <FaShoppingCart /> Кошик
@@ -52,7 +51,6 @@ const Header = () => {
                 </Nav.Link>
               </LinkContainer>
 
-              {/* Авторизований користувач */}
               {userInfo ? (
                 <NavDropdown title={userInfo.name} id='username'>
                   <LinkContainer to='/profile'>
@@ -70,7 +68,6 @@ const Header = () => {
                 </LinkContainer>
               )}
 
-              {/* Адмін меню */}
               {userInfo && userInfo.isAdmin && (
                 <NavDropdown title='Адмін' id='adminmenu'>
                   <LinkContainer to='/admin/productlist'>

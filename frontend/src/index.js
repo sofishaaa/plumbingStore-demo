@@ -28,6 +28,7 @@ import PaymentScreen from './screens/PaymentScreen';
 import PlaceOrderScreen from './screens/PlaceOrderScreen';
 import OrderScreen from './screens/OrderScreen';
 import ProfileScreen from './screens/ProfileScreen';
+import NotFoundScreen from './screens/NotFoundScreen';
 
 // Route guards
 import PrivateRoute from './components/PrivateRoute';
@@ -73,6 +74,9 @@ const router = createBrowserRouter(
         <Route path='admin/userlist' element={<UserListScreen />} />
         <Route path='admin/user/:id/edit' element={<UserEditScreen />} />
       </Route>
+
+      {/* 404 */}
+      <Route path='*' element={<NotFoundScreen />} />
     </Route>
   )
 );
