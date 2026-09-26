@@ -18,11 +18,12 @@ const Header = () => {
   const logoutHandler = async () => {
     try {
       await logoutApiCall().unwrap();
+    } catch (err) {
+      // Навіть якщо сервер недоступний — виходимо локально
+    } finally {
       dispatch(clearCredentials());
       dispatch(clearCartItems());
       navigate('/login');
-    } catch (err) {
-      console.error(err);
     }
   };
 

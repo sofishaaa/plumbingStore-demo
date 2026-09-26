@@ -9,6 +9,7 @@ import Loader from '../components/Loader';
 import { useProfileMutation } from '../slices/usersApiSlice';
 import { useGetMyOrdersQuery } from '../slices/ordersApiSlice';
 import { setCredentials } from '../slices/authSlice';
+import { MIN_PASSWORD_LENGTH } from '../constants';
 
 const ProfileScreen = () => {
   const [name, setName] = useState('');
@@ -33,6 +34,10 @@ const ProfileScreen = () => {
     e.preventDefault();
     if (password !== confirmPassword) {
       toast.error('Паролі не співпадають');
+      return;
+    }
+    if (password && password.length < MIN_PASSWORD_LENGTH) {
+      toast.error(`Пароль має містити щонайменше ${MIN_PASSWORD_LENGTH} символів`);
       return;
     }
     try {
@@ -78,7 +83,9 @@ const ProfileScreen = () => {
             <Form.Label>Новий пароль</Form.Label>
             <Form.Control
               type='password'
-              placeholder='Введіть новий пароль'
+              placeholder={`Мінімум ${MIN_PASSWORD_LENGTH} символів`}
+              minLength={MIN_PASSWORD_LENGTH}
+              autoComplete='new-password'
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />

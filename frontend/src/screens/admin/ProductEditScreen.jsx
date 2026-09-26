@@ -7,27 +7,10 @@ import Loader from '../../components/Loader';
 import FormContainer from '../../components/FormContainer';
 import {
   useGetProductDetailsQuery,
+  useGetFilterOptionsQuery,
   useUpdateProductMutation,
   useUploadProductImageMutation,
 } from '../../slices/productsApiSlice';
-
-const CATEGORIES = [
-  'Рушникосушки',
-  'Унітази',
-  'Інсталяції та кнопки зливу',
-  'Змішувачі',
-  'Тумби',
-  'Душові кабіни',
-  'Душові набори',
-  'Ванни',
-  'Радіатори',
-  'Аксесуари для ванної кімнати',
-  'Водовідведення',
-  'Тепла підлога',
-  'Дзеркала',
-  'Кухонні мийки',
-  'Інше',
-];
 
 const ProductEditScreen = () => {
   const { id: productId } = useParams();
@@ -46,6 +29,10 @@ const ProductEditScreen = () => {
     isLoading,
     error,
   } = useGetProductDetailsQuery(productId);
+
+  // Категорії — з сервера, щоб список збігався з валідацією моделі
+  const { data: filterOptions } = useGetFilterOptionsQuery();
+  const categories = filterOptions?.categories || [];
 
   const [updateProduct, { isLoading: loadingUpdate }] =
     useUpdateProductMutation();
@@ -175,7 +162,7 @@ const ProductEditScreen = () => {
                 required
               >
                 <option value=''>Оберіть категорію...</option>
-                {CATEGORIES.map((cat) => (
+                {categories.map((cat) => (
                   <option key={cat} value={cat}>
                     {cat}
                   </option>

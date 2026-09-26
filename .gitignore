@@ -24,3 +24,7 @@ yarn-debug.log*
 yarn-error.log*
 
 .claude/.env
+
+# frontend build and admin-uploaded images
+/frontend/build
+/uploads

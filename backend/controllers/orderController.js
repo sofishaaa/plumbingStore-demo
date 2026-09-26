@@ -1,7 +1,36 @@
+import { isObjectIdOrHexString } from 'mongoose';
 import asyncHandler from '../middleware/asyncHandler.js';
 import Order from '../models/orderModel.js';
 import Product from '../models/productModel.js';
 import { calcPrices } from '../utils/calcPrices.js';
+import { PAYMENT_METHODS } from '../constants/orders.js';
+import { isNonEmptyString, isValidPhone } from '../utils/validators.js';
+
+const MAX_ORDER_LINES = 50;
+const MAX_QTY_PER_LINE = 100;
+
+const optionalString = (value, maxLength) =>
+  value === undefined ||
+  value === '' ||
+  (typeof value === 'string' && value.length <= maxLength);
+
+// Повертає текст помилки або null, якщо адреса коректна
+const validateShippingAddress = (address) => {
+  if (!address || typeof address !== 'object') return 'Вкажіть дані доставки';
+  if (!isValidPhone(address.phone)) return 'Вкажіть коректний номер телефону';
+  if (!isNonEmptyString(address.city, 100)) return 'Вкажіть місто';
+  if (
+    !optionalString(address.novaPoshtaBranch, 200) ||
+    !optionalString(address.address, 300) ||
+    !optionalString(address.postalCode, 20)
+  ) {
+    return 'Некоректні дані доставки';
+  }
+  if (!address.novaPoshtaBranch?.trim() && !address.address?.trim()) {
+    return "Вкажіть відділення Нової Пошти або адресу для кур'єра";
+  }
+  return null;
+};
 
 // @desc    Створити замовлення
 // @route   POST /api/orders
@@ -9,29 +38,59 @@ import { calcPrices } from '../utils/calcPrices.js';
 const addOrderItems = asyncHandler(async (req, res) => {
   const { orderItems, shippingAddress, paymentMethod } = req.body;
 
-  if (!orderItems || orderItems.length === 0) {
+  if (!Array.isArray(orderItems) || orderItems.length === 0) {
     res.status(400);
     throw new Error('Відсутні товари в замовленні');
   }
+  if (orderItems.length > MAX_ORDER_LINES) {
+    res.status(400);
+    throw new Error('Забагато позицій у замовленні');
+  }
 
-  // Отримуємо актуальні ціни з БД
-  const itemsFromDB = await Product.find({
-    _id: { $in: orderItems.map((x) => x._id) },
-  });
+  const shippingError = validateShippingAddress(shippingAddress);
+  if (shippingError) {
+    res.status(400);
+    throw new Error(shippingError);
+  }
 
-  const dbOrderItems = orderItems.map((itemFromClient) => {
-    const matchingItemFromDB = itemsFromDB.find(
-      (itemFromDB) => itemFromDB._id.toString() === itemFromClient._id
-    );
-    if (!matchingItemFromDB) {
+  if (!PAYMENT_METHODS.includes(paymentMethod)) {
+    res.status(400);
+    throw new Error('Невідомий спосіб оплати');
+  }
+
+  // Об'єднуємо дублікати і перевіряємо кількість
+  const qtyById = new Map();
+  for (const item of orderItems) {
+    const id = item?._id;
+    const qty = item?.qty;
+    if (!isObjectIdOrHexString(id) || !Number.isInteger(qty) || qty < 1) {
+      res.status(400);
+      throw new Error('Некоректні товари в замовленні');
+    }
+    qtyById.set(String(id), (qtyById.get(String(id)) || 0) + qty);
+  }
+
+  // Назву, фото і ціну беремо тільки з БД — клієнту не довіряємо
+  const itemsFromDB = await Product.find({ _id: { $in: [...qtyById.keys()] } });
+
+  const dbOrderItems = [...qtyById].map(([id, qty]) => {
+    const product = itemsFromDB.find((p) => p._id.toString() === id);
+    if (!product) {
       res.status(404);
-      throw new Error(`Товар не знайдено: ${itemFromClient._id}`);
+      throw new Error(`Товар не знайдено: ${id}`);
+    }
+    if (qty > MAX_QTY_PER_LINE || qty > product.countInStock) {
+      res.status(400);
+      throw new Error(
+        `Недостатньо товару «${product.name}» на складі (доступно: ${product.countInStock})`
+      );
     }
     return {
-      ...itemFromClient,
-      product: itemFromClient._id,
-      price: matchingItemFromDB.price,
-      _id: undefined,
+      name: product.name,
+      qty,
+      image: product.image,
+      price: product.price,
+      product: product._id,
     };
   });
 
@@ -41,7 +100,14 @@ const addOrderItems = asyncHandler(async (req, res) => {
   const order = new Order({
     orderItems: dbOrderItems,
     user: req.user._id,
-    shippingAddress,
+    shippingAddress: {
+      phone: shippingAddress.phone.trim(),
+      city: shippingAddress.city.trim(),
+      novaPoshtaBranch: shippingAddress.novaPoshtaBranch?.trim() || '',
+      address: shippingAddress.address?.trim() || '',
+      postalCode: shippingAddress.postalCode?.trim() || '',
+      country: 'Україна',
+    },
     paymentMethod,
     itemsPrice,
     taxPrice,
@@ -55,13 +121,16 @@ const addOrderItems = asyncHandler(async (req, res) => {
 
 // @desc    Отримати замовлення за ID
 // @route   GET /api/orders/:id
-// @access  Private
+// @access  Private (власник замовлення або адмін)
 const getOrderById = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id).populate(
     'user',
     'name email'
   );
-  if (order) {
+
+  // Чуже замовлення — відповідаємо 404, щоб не розкривати його існування
+  const isOwner = order?.user && order.user._id.equals(req.user._id);
+  if (order && (isOwner || req.user.isAdmin)) {
     res.json(order);
   } else {
     res.status(404);
@@ -69,20 +138,14 @@ const getOrderById = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Оновити статус оплати
+// @desc    Позначити як оплачено (менеджер підтверджує оплату вручну)
 // @route   PUT /api/orders/:id/pay
-// @access  Private
+// @access  Private/Admin
 const updateOrderToPaid = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id);
   if (order) {
     order.isPaid = true;
     order.paidAt = Date.now();
-    order.paymentResult = {
-      id: req.body.id,
-      status: req.body.status,
-      update_time: req.body.update_time,
-      email_address: req.body.payer?.email_address,
-    };
     const updatedOrder = await order.save();
     res.json(updatedOrder);
   } else {
@@ -111,7 +174,7 @@ const updateOrderToDelivered = asyncHandler(async (req, res) => {
 // @route   GET /api/orders/myorders
 // @access  Private
 const getMyOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find({ user: req.user._id });
+  const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 });
   res.json(orders);
 });
 
@@ -119,7 +182,9 @@ const getMyOrders = asyncHandler(async (req, res) => {
 // @route   GET /api/orders
 // @access  Private/Admin
 const getOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find({}).populate('user', 'id name');
+  const orders = await Order.find({})
+    .populate('user', 'id name')
+    .sort({ createdAt: -1 });
   res.json(orders);
 });
 
@@ -127,17 +192,27 @@ const getOrders = asyncHandler(async (req, res) => {
 // @route   PUT /api/orders/:id/shipping
 // @access  Private/Admin
 const setShippingPrice = asyncHandler(async (req, res) => {
-  const { shippingPrice, managerNote } = req.body;
+  const { managerNote } = req.body;
+  const shippingPrice = Number(req.body.shippingPrice);
 
-  if (shippingPrice === undefined || shippingPrice < 0) {
+  if (
+    req.body.shippingPrice === undefined ||
+    req.body.shippingPrice === '' ||
+    !Number.isFinite(shippingPrice) ||
+    shippingPrice < 0
+  ) {
     res.status(400);
     throw new Error('Вкажіть коректну вартість доставки');
+  }
+  if (!optionalString(managerNote, 500)) {
+    res.status(400);
+    throw new Error('Нотатка задовга (максимум 500 символів)');
   }
 
   const order = await Order.findById(req.params.id);
   if (order) {
-    order.shippingPrice = Number(shippingPrice);
-    order.totalPrice = Number(order.itemsPrice) + Number(shippingPrice);
+    order.shippingPrice = shippingPrice;
+    order.totalPrice = Number(order.itemsPrice) + shippingPrice;
     order.shippingConfirmed = true;
     if (managerNote) order.managerNote = managerNote;
 

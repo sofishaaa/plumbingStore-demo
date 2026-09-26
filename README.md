@@ -33,9 +33,47 @@ plumbingStore/
 │       ├── constants.js
 │       ├── index.js
 │       └── store.js
-├── .env
+├── uploads/                  ← зображення з адмінки (не в git)
+├── .env.example              ← шаблон змінних оточення
 └── package.json
 ```
+
+## 🛠️ Локальний запуск
+
+```bash
+cp .env.example .env          # заповніть MONGO_URI і JWT_SECRET
+npm install && npm install --prefix frontend
+npm run data:import           # демо-дані (адмін: admin@santexstudio.ua / admin123)
+npm run dev                   # API :5001 + React :3000
+```
+
+---
+
+## 🚀 Деплой (production)
+
+Потрібно: Node.js ≥ 20, MongoDB (рекомендовано MongoDB Atlas), HTTPS на хостингу.
+
+1. **Змінні оточення** на хостингу (див. `.env.example`):
+   `NODE_ENV=production`, `MONGO_URI`, `JWT_SECRET` (≥ 32 символи), `CLIENT_URL` (адреса сайту),
+   `SMTP_*`, `FROM_EMAIL`. Без обов'язкових змінних сервер не стартує.
+2. **Build:** `npm run build` · **Start:** `npm start` · **Healthcheck:** `GET /api/health`
+3. **Перше наповнення БД** (одноразово, ВИДАЛЯЄ всі дані):
+   `SEED_ADMIN_PASSWORD=<надійний пароль> npm run data:import -- --force`
+4. **Зображення з адмінки** зберігаються в `UPLOADS_DIR` (за замовчуванням `./uploads`).
+   На Render / Railway / Heroku диск ефемерний — підключіть постійний диск і вкажіть шлях до нього
+   (або перенесіть зберігання в Cloudinary / S3).
+5. **MongoDB Atlas:** окремий користувач БД лише з правами на цю базу, увімкнені бекапи,
+   Network Access — лише IP сервера, якщо хостинг дає статичний IP.
+
+### Безпека (що вже налаштовано)
+
+- Заголовки безпеки через `helmet` (CSP, HSTS, X-Frame-Options, nosniff)
+- Rate limiting: вхід (10 невдалих спроб / 15 хв), реєстрація, скидання пароля, загальний ліміт API
+- Захист від NoSQL-ін'єкцій і ReDoS у пошуку, валідація всіх вхідних даних
+- JWT в HttpOnly + Secure + SameSite=Strict cookie; після зміни пароля старі сесії недійсні
+- Замовлення бачить лише власник або адмін; оплату/доставку позначає лише адмін
+- Завантаження файлів — лише адмін, до 5 МБ, тільки jpg/png/webp з перевіркою сигнатури
+- Сідер не запуститься в production без `--force`
 
 ## 🗺️ Маршрути
 
@@ -111,6 +149,14 @@ GET    /api/users                 — всі юзери (адмін)
 GET    /api/users/:id             — юзер за id (адмін)
 PUT    /api/users/:id             — оновити юзера (адмін)
 DELETE /api/users/:id             — видалити юзера (адмін)
+POST   /api/users/forgot-password — запит на скидання пароля
+POST   /api/users/reset-password/:token — новий пароль
+```
+
+### Інше
+```
+POST   /api/upload                — завантажити зображення (адмін)
+GET    /api/health                — стан сервера і БД
 ```
 
 ### Замовлення
@@ -119,7 +165,7 @@ POST   /api/orders                — створити замовлення
 GET    /api/orders                — всі замовлення (адмін)
 GET    /api/orders/myorders       — мої замовлення
 GET    /api/orders/:id            — замовлення за id
-PUT    /api/orders/:id/pay        — позначити як оплачено
+PUT    /api/orders/:id/pay        — позначити як оплачено (адмін)
 PUT    /api/orders/:id/deliver    — позначити як доставлено (адмін)
 PUT    /api/orders/:id/shipping   — встановити доставку НП (адмін)
 ```
