@@ -8,6 +8,8 @@ const Product = ({ Product: product }) => {
       <Link to={`/product/${product._id}`} style={{ textDecoration: 'none' }}>
         <Card.Img
           src={product.image}
+          alt={product.name}
+          loading='lazy'
           variant='top'
           style={{ height: '200px', objectFit: 'contain', padding: '12px' }}
         />

@@ -32,6 +32,7 @@ const PlaceOrderScreen = () => {
         paymentMethod: cart.paymentMethod,
       }).unwrap();
       dispatch(clearCartItems());
+      toast.success(`Замовлення №${res.orderNumber} оформлено! Менеджер зв'яжеться з вами`);
       navigate(`/order/${res._id}`);
     } catch (err) {
       toast.error(err?.data?.message || err.error);
@@ -156,6 +157,11 @@ const PlaceOrderScreen = () => {
                   Підтвердити замовлення
                 </Button>
                 {isLoading && <Loader />}
+                <p className='consent-note mt-2 mb-0'>
+                  Натискаючи «Підтвердити замовлення», ви приймаєте умови{' '}
+                  <Link to='/terms'>Публічної оферти</Link> та погоджуєтесь з{' '}
+                  <Link to='/privacy'>Політикою конфіденційності</Link>.
+                </p>
               </ListGroup.Item>
             </ListGroup>
           </Card>

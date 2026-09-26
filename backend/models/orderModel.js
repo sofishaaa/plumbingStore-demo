@@ -2,6 +2,12 @@ import mongoose from 'mongoose';
 
 const orderSchema = new mongoose.Schema(
   {
+    // Короткий номер для спілкування з клієнтом (№1001, №1002...)
+    orderNumber: {
+      type: Number,
+      unique: true,
+      sparse: true,
+    },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
@@ -78,6 +84,16 @@ const orderSchema = new mongoose.Schema(
       default: false,
     },
     deliveredAt: { type: Date },
+    // ТТН Нової Пошти — вказується менеджером під час відправлення
+    trackingNumber: { type: String, default: '' },
+    shippedAt: { type: Date },
+    isCancelled: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
+    cancelledAt: { type: Date },
+    cancelReason: { type: String, default: '' },
   },
   { timestamps: true }
 );

@@ -5,6 +5,7 @@ import { FaTimes, FaCheck, FaTruck } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import Message from '../../components/Message';
 import Loader from '../../components/Loader';
+import { orderLabel } from '../../utils/orderUtils';
 import {
   useGetOrdersQuery,
   useSetShippingPriceMutation,
@@ -61,7 +62,7 @@ const OrderListScreen = () => {
         <Table striped hover responsive className='table-sm'>
           <thead>
             <tr>
-              <th>ID</th>
+              <th>№</th>
               <th>Клієнт</th>
               <th>Дата</th>
               <th>Товари</th>
@@ -74,8 +75,13 @@ const OrderListScreen = () => {
           </thead>
           <tbody>
             {orders.map((order) => (
-              <tr key={order._id}>
-                <td>{order._id}</td>
+              <tr key={order._id} className={order.isCancelled ? 'text-muted' : ''}>
+                <td>
+                  {orderLabel(order)}
+                  {order.isCancelled && (
+                    <span className='badge bg-secondary ms-2'>Скасовано</span>
+                  )}
+                </td>
                 <td>{order.user?.name}</td>
                 <td>
                   {new Date(order.createdAt).toLocaleDateString('uk-UA')}
@@ -88,6 +94,8 @@ const OrderListScreen = () => {
                     <span className='text-success'>
                       {Number(order.shippingPrice).toLocaleString('uk-UA')} грн
                     </span>
+                  ) : order.isCancelled ? (
+                    '—'
                   ) : (
                     <Button
                       variant='outline-warning'

@@ -9,6 +9,7 @@ const RECOMMENDED_IN_PRODUCTION = [
   'SMTP_USER',
   'SMTP_PASS',
   'FROM_EMAIL',
+  'ORDER_NOTIFY_EMAIL',
 ];
 
 const validateEnv = () => {
@@ -39,7 +40,7 @@ const validateEnv = () => {
     );
     if (missingRecommended.length > 0) {
       console.warn(
-        `Увага: не задано ${missingRecommended.join(', ')} — листи для скидання пароля не надсилатимуться`
+        `Увага: не задано ${missingRecommended.join(', ')} — листи (скидання пароля, сповіщення про замовлення) можуть не надсилатися`
       );
     }
   }

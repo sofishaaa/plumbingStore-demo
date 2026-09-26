@@ -29,6 +29,10 @@ import PlaceOrderScreen from './screens/PlaceOrderScreen';
 import OrderScreen from './screens/OrderScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import NotFoundScreen from './screens/NotFoundScreen';
+import DeliveryPaymentScreen from './screens/info/DeliveryPaymentScreen';
+import ReturnsScreen from './screens/info/ReturnsScreen';
+import TermsScreen from './screens/info/TermsScreen';
+import PrivacyScreen from './screens/info/PrivacyScreen';
 
 // Route guards
 import PrivateRoute from './components/PrivateRoute';
@@ -55,6 +59,10 @@ const router = createBrowserRouter(
       <Route path='register' element={<RegisterScreen />} />
       <Route path='forgot-password' element={<ForgotPasswordScreen />} />
       <Route path='reset-password/:token' element={<ResetPasswordScreen />} />
+      <Route path='delivery-payment' element={<DeliveryPaymentScreen />} />
+      <Route path='returns' element={<ReturnsScreen />} />
+      <Route path='terms' element={<TermsScreen />} />
+      <Route path='privacy' element={<PrivacyScreen />} />
 
       {/* Захищені маршрути (тільки для авторизованих) */}
       <Route path='' element={<PrivateRoute />}>

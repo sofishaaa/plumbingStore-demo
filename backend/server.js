@@ -12,6 +12,7 @@ import { UPLOADS_DIR } from './config/paths.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 import sanitizeInput from './middleware/sanitizeMiddleware.js';
 import { apiLimiter } from './middleware/rateLimitMiddleware.js';
+import { robotsTxt, sitemapXml, createIndexRenderer } from './utils/seo.js';
 import productRoutes from './routes/productRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
@@ -88,6 +89,10 @@ app.use('/api/upload', uploadRoutes);
 // Зображення, завантажені через адмінку
 app.use('/uploads', express.static(UPLOADS_DIR, { maxAge: '30d', index: false }));
 
+// SEO: карта сайту для пошукових систем
+app.get('/robots.txt', robotsTxt);
+app.get('/sitemap.xml', sitemapXml);
+
 // Статичні файли (продакшн)
 if (isProduction) {
   const buildDir = path.resolve('frontend', 'build');
@@ -104,10 +109,17 @@ if (isProduction) {
     })
   );
 
-  // SPA fallback для всіх маршрутів, крім /api і /uploads
-  app.get(/^\/(?!api(\/|$)|uploads(\/|$)).*/, (req, res) => {
-    res.setHeader('Cache-Control', 'no-cache');
-    res.sendFile(path.join(buildDir, 'index.html'));
+  // SPA fallback для всіх маршрутів, крім /api і /uploads.
+  // HTML рендериться з meta-тегами сторінки (title, description, Open Graph)
+  const renderIndex = createIndexRenderer(path.join(buildDir, 'index.html'));
+  app.get(/^\/(?!api(\/|$)|uploads(\/|$)).*/, async (req, res, next) => {
+    try {
+      const html = await renderIndex(req);
+      res.setHeader('Cache-Control', 'no-cache');
+      res.type('html').send(html);
+    } catch (error) {
+      next(error);
+    }
   });
 } else {
   app.get('/', (req, res) => {

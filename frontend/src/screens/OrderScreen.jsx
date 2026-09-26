@@ -1,6 +1,7 @@
+import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import {
-  Row, Col, ListGroup, Image, Card, Button,
+  Row, Col, ListGroup, Image, Card, Button, Form, InputGroup,
 } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -10,7 +11,11 @@ import {
   useGetOrderDetailsQuery,
   usePayOrderMutation,
   useDeliverOrderMutation,
+  useSetTrackingNumberMutation,
+  useCancelOrderMutation,
 } from '../slices/ordersApiSlice';
+import SHOP, { isBankInfoComplete } from '../config/shop';
+import { orderLabel, trackingUrl } from '../utils/orderUtils';
 
 const OrderScreen = () => {
   const { id: orderId } = useParams();
@@ -22,7 +27,11 @@ const OrderScreen = () => {
     error,
   } = useGetOrderDetailsQuery(orderId);
 
+  const [trackingInput, setTrackingInput] = useState('');
   const [payOrder, { isLoading: loadingPay }] = usePayOrderMutation();
+  const [setTrackingNumber, { isLoading: loadingTracking }] =
+    useSetTrackingNumberMutation();
+  const [cancelOrder, { isLoading: loadingCancel }] = useCancelOrderMutation();
   const [deliverOrder, { isLoading: loadingDeliver }] = useDeliverOrderMutation();
   const { userInfo } = useSelector((state) => state.auth);
 
@@ -31,6 +40,32 @@ const OrderScreen = () => {
       await payOrder(orderId).unwrap();
       refetch();
       toast.success('Статус оновлено: оплачено');
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
+  };
+
+  const trackingHandler = async (e) => {
+    e.preventDefault();
+    try {
+      await setTrackingNumber({ orderId, trackingNumber: trackingInput }).unwrap();
+      refetch();
+      setTrackingInput('');
+      toast.success('ТТН збережено, клієнту надіслано лист');
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
+  };
+
+  const cancelOrderHandler = async () => {
+    const reason = window.prompt(
+      'Скасувати замовлення? Товари повернуться на склад.\nПричина (необов\'язково):'
+    );
+    if (reason === null) return;
+    try {
+      await cancelOrder({ orderId, reason }).unwrap();
+      refetch();
+      toast.success('Замовлення скасовано');
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
@@ -52,7 +87,17 @@ const OrderScreen = () => {
     <Message variant='danger'>{error?.data?.message || error.error}</Message>
   ) : (
     <>
-      <h1>Замовлення #{order._id}</h1>
+      <h1>Замовлення {orderLabel(order)}</h1>
+      <p className='text-muted'>
+        від {new Date(order.createdAt).toLocaleDateString('uk-UA')}
+      </p>
+      {order.isCancelled && (
+        <Message variant='danger'>
+          Замовлення скасовано{' '}
+          {new Date(order.cancelledAt).toLocaleDateString('uk-UA')}
+          {order.cancelReason && `. Причина: ${order.cancelReason}`}
+        </Message>
+      )}
       <Row>
         <Col md={8}>
           <ListGroup variant='flush'>
@@ -75,12 +120,28 @@ const OrderScreen = () => {
               {order.shippingAddress.address && (
                 <p><strong>Адреса: </strong>{order.shippingAddress.address}</p>
               )}
+              {order.trackingNumber && (
+                <p>
+                  <strong>ТТН Нової Пошти: </strong>
+                  <a
+                    href={trackingUrl(order.trackingNumber)}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                  >
+                    {order.trackingNumber}
+                  </a>
+                </p>
+              )}
               {order.isDelivered ? (
                 <Message variant='success'>
                   Доставлено {new Date(order.deliveredAt).toLocaleDateString('uk-UA')}
                 </Message>
+              ) : order.trackingNumber ? (
+                <Message variant='info'>
+                  Відправлено {new Date(order.shippedAt).toLocaleDateString('uk-UA')}
+                </Message>
               ) : (
-                <Message variant='warning'>Очікує доставки</Message>
+                !order.isCancelled && <Message variant='warning'>Очікує відправлення</Message>
               )}
             </ListGroup.Item>
 
@@ -95,6 +156,35 @@ const OrderScreen = () => {
               ) : (
                 <Message variant='warning'>Не оплачено</Message>
               )}
+
+              {/* Реквізити для оплати переказом */}
+              {order.paymentMethod === 'Банківський переказ' &&
+                !order.isPaid &&
+                !order.isCancelled &&
+                (!order.shippingConfirmed ? (
+                  <p className='text-muted'>
+                    Реквізити для оплати з'являться тут після того, як менеджер
+                    підтвердить замовлення та вартість доставки.
+                  </p>
+                ) : isBankInfoComplete ? (
+                  <div className='legal-details'>
+                    <p className='mb-1'><strong>Реквізити для оплати</strong></p>
+                    <p className='mb-1'>Отримувач: {SHOP.bank.recipient}</p>
+                    {SHOP.taxId && <p className='mb-1'>Код отримувача: {SHOP.taxId}</p>}
+                    <p className='mb-1'>IBAN: {SHOP.bank.iban}</p>
+                    {SHOP.bank.bankName && <p className='mb-1'>Банк: {SHOP.bank.bankName}</p>}
+                    <p className='mb-1'>
+                      Сума: {Number(order.totalPrice).toLocaleString('uk-UA')} грн
+                    </p>
+                    <p className='mb-0'>
+                      Призначення платежу: Оплата замовлення {orderLabel(order)}
+                    </p>
+                  </div>
+                ) : (
+                  <p className='text-muted'>
+                    Менеджер надішле вам реквізити для оплати.
+                  </p>
+                ))}
             </ListGroup.Item>
 
             {/* Товари */}
@@ -165,7 +255,7 @@ const OrderScreen = () => {
               </ListGroup.Item>
 
               {/* Кнопка адміна — підтвердити оплату (переказ або накладений платіж) */}
-              {userInfo?.isAdmin && !order.isPaid && (
+              {userInfo?.isAdmin && !order.isPaid && !order.isCancelled && (
                 <ListGroup.Item>
                   <Button
                     type='button'
@@ -178,8 +268,31 @@ const OrderScreen = () => {
                 </ListGroup.Item>
               )}
 
+              {/* Адмін — ТТН Нової Пошти після відправлення */}
+              {userInfo?.isAdmin && !order.isCancelled && !order.isDelivered && (
+                <ListGroup.Item>
+                  <Form onSubmit={trackingHandler}>
+                    <Form.Label className='small mb-1'>
+                      {order.trackingNumber ? 'Змінити ТТН' : 'ТТН Нової Пошти'}
+                    </Form.Label>
+                    <InputGroup>
+                      <Form.Control
+                        value={trackingInput}
+                        onChange={(e) => setTrackingInput(e.target.value)}
+                        placeholder='20450000000000'
+                        inputMode='numeric'
+                        required
+                      />
+                      <Button type='submit' disabled={loadingTracking}>
+                        Зберегти
+                      </Button>
+                    </InputGroup>
+                  </Form>
+                </ListGroup.Item>
+              )}
+
               {/* Кнопка адміна — позначити як доставлено */}
-              {userInfo?.isAdmin && !order.isDelivered && (
+              {userInfo?.isAdmin && !order.isDelivered && !order.isCancelled && (
                 <ListGroup.Item>
                   <Button
                     type='button'
@@ -188,6 +301,21 @@ const OrderScreen = () => {
                     disabled={loadingDeliver}
                   >
                     Позначити як доставлено
+                  </Button>
+                </ListGroup.Item>
+              )}
+
+              {/* Адмін — скасування з поверненням товару на склад */}
+              {userInfo?.isAdmin && !order.isDelivered && !order.isCancelled && (
+                <ListGroup.Item>
+                  <Button
+                    type='button'
+                    variant='outline-danger'
+                    className='w-100'
+                    onClick={cancelOrderHandler}
+                    disabled={loadingCancel}
+                  >
+                    Скасувати замовлення
                   </Button>
                 </ListGroup.Item>
               )}

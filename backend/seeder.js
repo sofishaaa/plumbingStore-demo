@@ -4,6 +4,7 @@ import { demoUsers, products } from './data/products.js';
 import User from './models/userModel.js';
 import Product from './models/productModel.js';
 import Order from './models/orderModel.js';
+import Counter from './models/counterModel.js';
 import connectDB, { closeDB } from './config/db.js';
 
 dotenv.config();
@@ -52,6 +53,7 @@ const importData = async () => {
     const adminUser = getAdminUser();
 
     await Order.deleteMany();
+    await Counter.deleteMany();
     await Product.deleteMany();
     await User.deleteMany();
 
@@ -89,6 +91,7 @@ const importData = async () => {
 const destroyData = async () => {
   try {
     await Order.deleteMany();
+    await Counter.deleteMany();
     await Product.deleteMany();
     await User.deleteMany();
     console.log('✅ Дані успішно видалено!');

@@ -5,6 +5,7 @@ import {
   Row, Col, Image, ListGroup, Card, Button, Form,
 } from 'react-bootstrap';
 import { toast } from 'react-toastify';
+import { FaTruck, FaUndoAlt, FaMoneyBillWave } from 'react-icons/fa';
 import {
   useGetProductDetailsQuery,
   useCreateReviewMutation,
@@ -66,7 +67,12 @@ const ProductScreen = () => {
         </Message>
       ) : (
         <>
-          <Meta title={product.name} />
+          <Meta
+            title={`${product.name} — купити за ${product.price.toLocaleString('uk-UA')} грн | Сантех Студія`}
+            description={product.description.replace(/\s+/g, ' ').slice(0, 160)}
+            image={new URL(product.image, window.location.origin).href}
+            type='product'
+          />
           <Row>
             {/* Зображення */}
             <Col md={5}>
@@ -157,6 +163,23 @@ const ProductScreen = () => {
                     >
                       Додати в кошик
                     </Button>
+                  </ListGroup.Item>
+
+                  <ListGroup.Item>
+                    <ul className='product-perks'>
+                      <li>
+                        <FaTruck />
+                        <Link to='/delivery-payment'>Доставка Новою Поштою по Україні</Link>
+                      </li>
+                      <li>
+                        <FaMoneyBillWave />
+                        <span>Оплата при отриманні</span>
+                      </li>
+                      <li>
+                        <FaUndoAlt />
+                        <Link to='/returns'>Повернення протягом 14 днів</Link>
+                      </li>
+                    </ul>
                   </ListGroup.Item>
                 </ListGroup>
               </Card>

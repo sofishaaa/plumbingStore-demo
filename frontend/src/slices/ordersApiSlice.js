@@ -40,6 +40,22 @@ export const ordersApiSlice = apiSlice.injectEndpoints({
       }),
     }),
 
+    setTrackingNumber: builder.mutation({
+      query: ({ orderId, trackingNumber }) => ({
+        url: `${ORDERS_URL}/${orderId}/tracking`,
+        method: 'PUT',
+        body: { trackingNumber },
+      }),
+    }),
+
+    cancelOrder: builder.mutation({
+      query: ({ orderId, reason }) => ({
+        url: `${ORDERS_URL}/${orderId}/cancel`,
+        method: 'PUT',
+        body: { reason },
+      }),
+    }),
+
     // Менеджер встановлює вартість доставки НП
     setShippingPrice: builder.mutation({
       query: ({ orderId, shippingPrice, managerNote }) => ({
@@ -59,4 +75,6 @@ export const {
   usePayOrderMutation,
   useDeliverOrderMutation,
   useSetShippingPriceMutation,
+  useSetTrackingNumberMutation,
+  useCancelOrderMutation,
 } = ordersApiSlice;

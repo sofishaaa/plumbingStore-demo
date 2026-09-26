@@ -7,6 +7,8 @@ import {
   getMyOrders,
   getOrders,
   setShippingPrice,
+  setTrackingNumber,
+  cancelOrder,
 } from '../controllers/orderController.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
 import checkObjectId from '../middleware/checkObjectId.js';
@@ -23,5 +25,9 @@ router
 router
   .route('/:id/shipping')
   .put(protect, admin, checkObjectId, setShippingPrice);
+router
+  .route('/:id/tracking')
+  .put(protect, admin, checkObjectId, setTrackingNumber);
+router.route('/:id/cancel').put(protect, admin, checkObjectId, cancelOrder);
 
 export default router;

@@ -123,7 +123,7 @@ const HomeScreen = () => {
           ) : (
             <>
               <p className='results-count'>
-                Знайдено <strong>{data.products.length}</strong> товарів
+                Знайдено <strong>{data.count ?? data.products.length}</strong> товарів
                 {data.pages > 1 && ` (сторінка ${data.page} з ${data.pages})`}
               </p>
               <Row>

@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { FaTimes } from 'react-icons/fa';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
+import { orderLabel } from '../utils/orderUtils';
 import { useProfileMutation } from '../slices/usersApiSlice';
 import { useGetMyOrdersQuery } from '../slices/ordersApiSlice';
 import { setCredentials } from '../slices/authSlice';
@@ -120,7 +121,7 @@ const ProfileScreen = () => {
           <Table striped hover responsive className='table-sm'>
             <thead>
               <tr>
-                <th>ID</th>
+                <th>№</th>
                 <th>Дата</th>
                 <th>Сума</th>
                 <th>Оплачено</th>
@@ -131,7 +132,12 @@ const ProfileScreen = () => {
             <tbody>
               {orders.map((order) => (
                 <tr key={order._id}>
-                  <td>{order._id}</td>
+                  <td>
+                    {orderLabel(order)}
+                    {order.isCancelled && (
+                      <span className='badge bg-secondary ms-2'>Скасовано</span>
+                    )}
+                  </td>
                   <td>{new Date(order.createdAt).toLocaleDateString('uk-UA')}</td>
                   <td>{Number(order.totalPrice).toLocaleString('uk-UA')} грн</td>
                   <td>

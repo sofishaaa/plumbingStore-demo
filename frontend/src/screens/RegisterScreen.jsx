@@ -99,11 +99,17 @@ const RegisterScreen = () => {
           />
         </Form.Group>
 
+        <p className='consent-note mt-3'>
+          Реєструючись, ви погоджуєтесь з <Link to='/terms'>Публічною офертою</Link>{' '}
+          та надаєте згоду на обробку персональних даних відповідно до{' '}
+          <Link to='/privacy'>Політики конфіденційності</Link>.
+        </p>
+
         <Button
           disabled={isLoading}
           type='submit'
           variant='primary'
-          className='mt-3 w-100'
+          className='mt-2 w-100'
         >
           Зареєструватись
         </Button>
