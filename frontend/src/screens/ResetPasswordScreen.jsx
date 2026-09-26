@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import FormContainer from '../components/FormContainer';
 import Loader from '../components/Loader';
 import { useResetPasswordMutation } from '../slices/usersApiSlice';
+import { MIN_PASSWORD_LENGTH } from '../constants';
 
 const ResetPasswordScreen = () => {
   const { token } = useParams();
@@ -22,8 +23,8 @@ const ResetPasswordScreen = () => {
       toast.error('Паролі не збігаються');
       return;
     }
-    if (password.length < 6) {
-      toast.error('Пароль має містити щонайменше 6 символів');
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      toast.error(`Пароль має містити щонайменше ${MIN_PASSWORD_LENGTH} символів`);
       return;
     }
 
@@ -48,7 +49,9 @@ const ResetPasswordScreen = () => {
           <Form.Label>Новий пароль</Form.Label>
           <Form.Control
             type='password'
-            placeholder='Мінімум 6 символів'
+            placeholder={`Мінімум ${MIN_PASSWORD_LENGTH} символів`}
+            minLength={MIN_PASSWORD_LENGTH}
+            autoComplete='new-password'
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required

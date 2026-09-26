@@ -6,12 +6,15 @@ const userSchema = new mongoose.Schema(
     name: {
       type: String,
       required: [true, 'Ім\'я обов\'язкове'],
+      trim: true,
+      maxlength: [100, 'Ім\'я задовге (максимум 100 символів)'],
     },
     email: {
       type: String,
       required: [true, 'Email обов\'язковий'],
       unique: true,
       lowercase: true,
+      trim: true,
       match: [/\S+@\S+\.\S+/, 'Некоректний формат email'],
     },
     password: {
@@ -25,8 +28,21 @@ const userSchema = new mongoose.Schema(
     },
     resetPasswordToken: String,
     resetPasswordExpires: Date,
+    passwordChangedAt: Date,
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    // Хеш пароля та токени ніколи не потрапляють у JSON-відповіді
+    toJSON: {
+      transform: (doc, ret) => {
+        delete ret.password;
+        delete ret.resetPasswordToken;
+        delete ret.resetPasswordExpires;
+        delete ret.passwordChangedAt;
+        return ret;
+      },
+    },
+  }
 );
 
 // Порівняння введеного пароля з хешем
@@ -39,6 +55,8 @@ userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
+  // Мітка для інвалідації старих JWT (з запасом 1с на округлення iat)
+  if (!this.isNew) this.passwordChangedAt = new Date(Date.now() - 1000);
   next();
 });
 

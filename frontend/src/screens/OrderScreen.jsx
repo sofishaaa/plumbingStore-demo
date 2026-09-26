@@ -8,6 +8,7 @@ import Message from '../components/Message';
 import Loader from '../components/Loader';
 import {
   useGetOrderDetailsQuery,
+  usePayOrderMutation,
   useDeliverOrderMutation,
 } from '../slices/ordersApiSlice';
 
@@ -21,8 +22,19 @@ const OrderScreen = () => {
     error,
   } = useGetOrderDetailsQuery(orderId);
 
+  const [payOrder, { isLoading: loadingPay }] = usePayOrderMutation();
   const [deliverOrder, { isLoading: loadingDeliver }] = useDeliverOrderMutation();
   const { userInfo } = useSelector((state) => state.auth);
+
+  const payOrderHandler = async () => {
+    try {
+      await payOrder(orderId).unwrap();
+      refetch();
+      toast.success('Статус оновлено: оплачено');
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
+  };
 
   const deliverOrderHandler = async () => {
     try {
@@ -51,6 +63,11 @@ const OrderScreen = () => {
               <p><strong>Email: </strong>
                 <a href={`mailto:${order.user.email}`}>{order.user.email}</a>
               </p>
+              {order.shippingAddress.phone && (
+                <p><strong>Телефон: </strong>
+                  <a href={`tel:${order.shippingAddress.phone}`}>{order.shippingAddress.phone}</a>
+                </p>
+              )}
               <p><strong>Місто: </strong>{order.shippingAddress.city}</p>
               {order.shippingAddress.novaPoshtaBranch && (
                 <p><strong>Відділення НП: </strong>{order.shippingAddress.novaPoshtaBranch}</p>
@@ -147,8 +164,22 @@ const OrderScreen = () => {
                 </Row>
               </ListGroup.Item>
 
+              {/* Кнопка адміна — підтвердити оплату (переказ або накладений платіж) */}
+              {userInfo?.isAdmin && !order.isPaid && (
+                <ListGroup.Item>
+                  <Button
+                    type='button'
+                    className='btn w-100'
+                    onClick={payOrderHandler}
+                    disabled={loadingPay}
+                  >
+                    Позначити як оплачено
+                  </Button>
+                </ListGroup.Item>
+              )}
+
               {/* Кнопка адміна — позначити як доставлено */}
-              {userInfo?.isAdmin && order.isPaid && !order.isDelivered && (
+              {userInfo?.isAdmin && !order.isDelivered && (
                 <ListGroup.Item>
                   <Button
                     type='button'

@@ -4,9 +4,11 @@ import { Form, Button, Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import FormContainer from '../components/FormContainer';
+import { getSafeRedirect } from '../utils/safeRedirect';
 import Loader from '../components/Loader';
 import { useRegisterMutation } from '../slices/usersApiSlice';
 import { setCredentials } from '../slices/authSlice';
+import { MIN_PASSWORD_LENGTH } from '../constants';
 
 const RegisterScreen = () => {
   const [name, setName] = useState('');
@@ -22,7 +24,7 @@ const RegisterScreen = () => {
 
   const { search } = useLocation();
   const sp = new URLSearchParams(search);
-  const redirect = sp.get('redirect') || '/';
+  const redirect = getSafeRedirect(sp.get('redirect'));
 
   useEffect(() => {
     if (userInfo) navigate(redirect);
@@ -32,6 +34,10 @@ const RegisterScreen = () => {
     e.preventDefault();
     if (password !== confirmPassword) {
       toast.error('Паролі не співпадають');
+      return;
+    }
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      toast.error(`Пароль має містити щонайменше ${MIN_PASSWORD_LENGTH} символів`);
       return;
     }
     try {
@@ -73,7 +79,9 @@ const RegisterScreen = () => {
           <Form.Label>Пароль</Form.Label>
           <Form.Control
             type='password'
-            placeholder='Введіть пароль'
+            placeholder={`Мінімум ${MIN_PASSWORD_LENGTH} символів`}
+            minLength={MIN_PASSWORD_LENGTH}
+            autoComplete='new-password'
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required

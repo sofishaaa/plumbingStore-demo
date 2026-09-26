@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import FormContainer from '../components/FormContainer';
 import CheckoutSteps from '../components/CheckoutSteps';
 import { saveShippingAddress } from '../slices/cartSlice';
@@ -9,6 +10,7 @@ import { saveShippingAddress } from '../slices/cartSlice';
 const ShippingScreen = () => {
   const { shippingAddress } = useSelector((state) => state.cart);
 
+  const [phone, setPhone] = useState(shippingAddress?.phone || '');
   const [address, setAddress] = useState(shippingAddress?.address || '');
   const [city, setCity] = useState(shippingAddress?.city || '');
   const [postalCode, setPostalCode] = useState(shippingAddress?.postalCode || '');
@@ -21,8 +23,19 @@ const ShippingScreen = () => {
 
   const submitHandler = (e) => {
     e.preventDefault();
+    if (!novaPoshtaBranch.trim() && !address.trim()) {
+      toast.error("Вкажіть відділення Нової Пошти або адресу для кур'єра");
+      return;
+    }
     dispatch(
-      saveShippingAddress({ address, city, postalCode, novaPoshtaBranch, country: 'Україна' })
+      saveShippingAddress({
+        phone,
+        address,
+        city,
+        postalCode,
+        novaPoshtaBranch,
+        country: 'Україна',
+      })
     );
     navigate('/payment');
   };
@@ -36,6 +49,20 @@ const ShippingScreen = () => {
       </p>
 
       <Form onSubmit={submitHandler}>
+        <Form.Group className='my-2' controlId='phone'>
+          <Form.Label>Телефон отримувача</Form.Label>
+          <Form.Control
+            type='tel'
+            placeholder='+380 67 123 45 67'
+            value={phone}
+            required
+            pattern='\+?[\d\s\(\)\-]{10,20}'
+            title='Номер телефону, наприклад +380 67 123 45 67'
+            autoComplete='tel'
+            onChange={(e) => setPhone(e.target.value)}
+          />
+        </Form.Group>
+
         <Form.Group className='my-2' controlId='city'>
           <Form.Label>Місто</Form.Label>
           <Form.Control

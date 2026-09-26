@@ -19,20 +19,17 @@ const PlaceOrderScreen = () => {
   const [createOrder, { isLoading, error }] = useCreateOrderMutation();
 
   useEffect(() => {
-    if (!cart.shippingAddress?.city) navigate('/shipping');
+    if (!cart.shippingAddress?.city || !cart.shippingAddress?.phone) navigate('/shipping');
     else if (!cart.paymentMethod) navigate('/payment');
   }, [cart.shippingAddress, cart.paymentMethod, navigate]);
 
   const placeOrderHandler = async () => {
     try {
+      // Ціни, назви і фото сервер бере з БД — надсилаємо лише id та кількість
       const res = await createOrder({
-        orderItems: cart.cartItems,
+        orderItems: cart.cartItems.map(({ _id, qty }) => ({ _id, qty })),
         shippingAddress: cart.shippingAddress,
         paymentMethod: cart.paymentMethod,
-        itemsPrice: cart.itemsPrice,
-        shippingPrice: cart.shippingPrice,
-        taxPrice: cart.taxPrice,
-        totalPrice: cart.totalPrice,
       }).unwrap();
       dispatch(clearCartItems());
       navigate(`/order/${res._id}`);
@@ -52,6 +49,9 @@ const PlaceOrderScreen = () => {
             {/* Доставка */}
             <ListGroup.Item>
               <h2>Доставка</h2>
+              <p>
+                <strong>Телефон: </strong> {shippingAddress.phone}
+              </p>
               <p>
                 <strong>Місто: </strong> {shippingAddress.city}
               </p>

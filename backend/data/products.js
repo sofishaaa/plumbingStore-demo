@@ -1,22 +1,16 @@
-import bcrypt from 'bcryptjs';
-
-const users = [
-  {
-    name: 'Адміністратор',
-    email: 'admin@santexstudio.ua',
-    password: bcrypt.hashSync('admin123', 10),
-    isAdmin: true,
-  },
+// Демо-покупці — створюються сідером лише поза продакшном.
+// Адміністратор створюється сідером з SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD.
+const demoUsers = [
   {
     name: 'Іван Коваленко',
     email: 'ivan@example.com',
-    password: bcrypt.hashSync('password123', 10),
+    password: 'password123',
     isAdmin: false,
   },
   {
     name: 'Олена Мороз',
     email: 'olena@example.com',
-    password: bcrypt.hashSync('password123', 10),
+    password: 'password123',
     isAdmin: false,
   },
 ];
@@ -120,4 +114,4 @@ const products = [
   },
 ];
 
-export { users, products };
+export { demoUsers, products };

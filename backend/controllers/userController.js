@@ -1,24 +1,39 @@
 import crypto from 'crypto';
 import asyncHandler from '../middleware/asyncHandler.js';
-import generateToken from '../utils/generateToken.js';
+import generateToken, { clearToken } from '../utils/generateToken.js';
 import sendEmail from '../utils/sendEmail.js';
 import User from '../models/userModel.js';
+import {
+  MIN_PASSWORD_LENGTH,
+  isNonEmptyString,
+  isValidEmail,
+  isValidPassword,
+} from '../utils/validators.js';
+
+const PASSWORD_ERROR = `Пароль має містити від ${MIN_PASSWORD_LENGTH} до 128 символів`;
+
+const normalizeEmail = (email) =>
+  typeof email === 'string' ? email.trim().toLowerCase() : '';
+
+const userResponse = (user) => ({
+  _id: user._id,
+  name: user.name,
+  email: user.email,
+  isAdmin: user.isAdmin,
+});
 
 // @desc    Автентифікація + встановлення токену
 // @route   POST /api/users/login
 // @access  Public
 const authUser = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
-  const user = await User.findOne({ email });
+  const email = normalizeEmail(req.body.email);
+  const password = typeof req.body.password === 'string' ? req.body.password : '';
 
-  if (user && (await user.matchPassword(password))) {
+  const user = email ? await User.findOne({ email }) : null;
+
+  if (user && password && (await user.matchPassword(password))) {
     generateToken(res, user._id);
-    res.json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      isAdmin: user.isAdmin,
-    });
+    res.json(userResponse(user));
   } else {
     res.status(401);
     throw new Error('Неправильний email або пароль');
@@ -29,7 +44,21 @@ const authUser = asyncHandler(async (req, res) => {
 // @route   POST /api/users
 // @access  Public
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, password } = req.body;
+  const email = normalizeEmail(req.body.email);
+
+  if (!isNonEmptyString(name, 100)) {
+    res.status(400);
+    throw new Error("Вкажіть ім'я (до 100 символів)");
+  }
+  if (!isValidEmail(email)) {
+    res.status(400);
+    throw new Error('Некоректний email');
+  }
+  if (!isValidPassword(password)) {
+    res.status(400);
+    throw new Error(PASSWORD_ERROR);
+  }
 
   const userExists = await User.findOne({ email });
   if (userExists) {
@@ -41,12 +70,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   if (user) {
     generateToken(res, user._id);
-    res.status(201).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      isAdmin: user.isAdmin,
-    });
+    res.status(201).json(userResponse(user));
   } else {
     res.status(400);
     throw new Error('Невалідні дані користувача');
@@ -57,10 +81,7 @@ const registerUser = asyncHandler(async (req, res) => {
 // @route   POST /api/users/logout
 // @access  Private
 const logoutUser = asyncHandler(async (req, res) => {
-  res.cookie('jwt', '', {
-    httpOnly: true,
-    expires: new Date(0),
-  });
+  clearToken(res);
   res.status(200).json({ message: 'Вихід виконано успішно' });
 });
 
@@ -70,12 +91,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 const getUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
   if (user) {
-    res.json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      isAdmin: user.isAdmin,
-    });
+    res.json(userResponse(user));
   } else {
     res.status(404);
     throw new Error('Користувача не знайдено');
@@ -88,18 +104,43 @@ const getUserProfile = asyncHandler(async (req, res) => {
 const updateUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
   if (user) {
-    user.name = req.body.name || user.name;
-    user.email = req.body.email || user.email;
-    if (req.body.password) {
-      user.password = req.body.password;
+    const { name, password } = req.body;
+    const email = normalizeEmail(req.body.email);
+
+    if (name !== undefined && name !== '') {
+      if (!isNonEmptyString(name, 100)) {
+        res.status(400);
+        throw new Error("Вкажіть ім'я (до 100 символів)");
+      }
+      user.name = name;
     }
+
+    if (email && email !== user.email) {
+      if (!isValidEmail(email)) {
+        res.status(400);
+        throw new Error('Некоректний email');
+      }
+      if (await User.exists({ email })) {
+        res.status(400);
+        throw new Error('Цей email вже використовується');
+      }
+      user.email = email;
+    }
+
+    if (password) {
+      if (!isValidPassword(password)) {
+        res.status(400);
+        throw new Error(PASSWORD_ERROR);
+      }
+      user.password = password;
+    }
+
     const updatedUser = await user.save();
-    res.json({
-      _id: updatedUser._id,
-      name: updatedUser.name,
-      email: updatedUser.email,
-      isAdmin: updatedUser.isAdmin,
-    });
+
+    // Зміна пароля інвалідує старі сесії — видаємо новий токен поточній
+    if (password) generateToken(res, updatedUser._id);
+
+    res.json(userResponse(updatedUser));
   } else {
     res.status(404);
     throw new Error('Користувача не знайдено');
@@ -110,7 +151,9 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 // @route   GET /api/users
 // @access  Private/Admin
 const getUsers = asyncHandler(async (req, res) => {
-  const users = await User.find({});
+  const users = await User.find({})
+    .select('-password -resetPasswordToken -resetPasswordExpires')
+    .sort({ createdAt: -1 });
   res.json(users);
 });
 
@@ -118,7 +161,9 @@ const getUsers = asyncHandler(async (req, res) => {
 // @route   GET /api/users/:id
 // @access  Private/Admin
 const getUserById = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.params.id).select('-password');
+  const user = await User.findById(req.params.id).select(
+    '-password -resetPasswordToken -resetPasswordExpires'
+  );
   if (user) {
     res.json(user);
   } else {
@@ -151,16 +196,37 @@ const deleteUser = asyncHandler(async (req, res) => {
 const updateUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id);
   if (user) {
-    user.name = req.body.name || user.name;
-    user.email = req.body.email || user.email;
-    user.isAdmin = Boolean(req.body.isAdmin);
+    const email = normalizeEmail(req.body.email);
+    const isAdmin = Boolean(req.body.isAdmin);
+
+    // Не даємо адміну випадково зняти права з самого себе
+    if (user._id.equals(req.user._id) && !isAdmin) {
+      res.status(400);
+      throw new Error('Неможливо зняти права адміністратора з власного акаунта');
+    }
+
+    if (req.body.name) {
+      if (!isNonEmptyString(req.body.name, 100)) {
+        res.status(400);
+        throw new Error("Вкажіть ім'я (до 100 символів)");
+      }
+      user.name = req.body.name;
+    }
+    if (email && email !== user.email) {
+      if (!isValidEmail(email)) {
+        res.status(400);
+        throw new Error('Некоректний email');
+      }
+      if (await User.exists({ email })) {
+        res.status(400);
+        throw new Error('Цей email вже використовується');
+      }
+      user.email = email;
+    }
+    user.isAdmin = isAdmin;
+
     const updatedUser = await user.save();
-    res.json({
-      _id: updatedUser._id,
-      name: updatedUser.name,
-      email: updatedUser.email,
-      isAdmin: updatedUser.isAdmin,
-    });
+    res.json(userResponse(updatedUser));
   } else {
     res.status(404);
     throw new Error('Користувача не знайдено');
@@ -171,7 +237,8 @@ const updateUser = asyncHandler(async (req, res) => {
 // @route   POST /api/users/forgot-password
 // @access  Public
 const forgotPassword = asyncHandler(async (req, res) => {
-  const user = await User.findOne({ email: req.body.email });
+  const email = normalizeEmail(req.body.email);
+  const user = email ? await User.findOne({ email }) : null;
 
   if (!user) {
     // Відповідаємо 200, щоб не розкривати чи існує email
@@ -200,11 +267,20 @@ const forgotPassword = asyncHandler(async (req, res) => {
     </div>
   `;
 
-  await sendEmail({
-    to: user.email,
-    subject: 'Скидання пароля — Сантех Студія',
-    html,
-  });
+  try {
+    await sendEmail({
+      to: user.email,
+      subject: 'Скидання пароля — Сантех Студія',
+      html,
+    });
+  } catch (error) {
+    console.error('Помилка надсилання листа:', error.message);
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+    res.status(500);
+    throw new Error('Не вдалося надіслати лист. Спробуйте пізніше');
+  }
 
   res.json({ message: 'Якщо такий email зареєстрований, лист надіслано' });
 });
@@ -213,6 +289,11 @@ const forgotPassword = asyncHandler(async (req, res) => {
 // @route   POST /api/users/reset-password/:token
 // @access  Public
 const resetPassword = asyncHandler(async (req, res) => {
+  if (!isValidPassword(req.body.password)) {
+    res.status(400);
+    throw new Error(PASSWORD_ERROR);
+  }
+
   const hash = crypto
     .createHash('sha256')
     .update(req.params.token)

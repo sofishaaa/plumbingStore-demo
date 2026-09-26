@@ -21,15 +21,16 @@ const orderSchema = new mongoose.Schema(
       },
     ],
     shippingAddress: {
-      address: { type: String, required: true },
+      phone: { type: String, default: '' },
       city: { type: String, required: true },
-      postalCode: { type: String, required: true },
+      novaPoshtaBranch: { type: String, default: '' },
+      address: { type: String, default: '' }, // для кур'єрської доставки
+      postalCode: { type: String, default: '' },
       country: { type: String, required: true, default: 'Україна' },
     },
     paymentMethod: {
       type: String,
       required: true,
-      default: 'PayPal',
     },
     paymentResult: {
       id: { type: String },
@@ -80,6 +81,9 @@ const orderSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+orderSchema.index({ user: 1, createdAt: -1 });
+orderSchema.index({ createdAt: -1 });
 
 const Order = mongoose.model('Order', orderSchema);
 export default Order;
