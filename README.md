@@ -33,6 +33,7 @@ plumbingStore/
 │       ├── constants.js
 │       ├── index.js
 │       └── store.js
+├── landing/                  ← статичний лендінг (поки магазин не запущено)
 ├── uploads/                  ← зображення з адмінки (не в git)
 ├── .env.example              ← шаблон змінних оточення
 └── package.json
@@ -46,6 +47,23 @@ npm install && npm install --prefix frontend
 npm run data:import           # демо-дані (адмін: admin@santexstudio.ua / admin123)
 npm run dev                   # API :5001 + React :3000
 ```
+
+---
+
+## 🌐 Лендінг (тимчасова головна сторінка)
+
+Папка `landing/` — статична сторінка без збірки, бази й сервера: контакти, перелік категорій,
+як замовити. Вона стоїть на домені, доки магазин не запущено.
+
+- **Хостинг:** Cloudflare Pages (безкоштовно). Проєкт підключається до цього репозиторію:
+  build command — порожньо, output directory — `landing`. Кожен push у `main` оновлює сайт.
+- **Заголовки безпеки:** `landing/_headers`.
+- **Домен** записаний у `landing/index.html` (canonical, Open Graph, JSON-LD),
+  `landing/robots.txt` і `landing/sitemap.xml`. Замінити всюди однією командою:
+  `grep -rl santekhstudiia.com.ua landing | xargs sed -i 's/santekhstudiia.com.ua/НОВИЙ-ДОМЕН/g'`
+- **Локальний перегляд:** `npx serve landing`
+- **Запуск магазину:** у DNS домену замінити запис Cloudflare Pages на хостинг із Node.js
+  (див. «Деплой» нижче), адреса сайту залишиться та сама.
 
 ---
 
