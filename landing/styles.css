@@ -222,23 +222,129 @@ p {
   background: var(--orange);
 }
 
-.top__call-short {
+.top__call-ico {
+  display: none;
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+}
+
+.nav a[aria-current='page'] {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+
+.top__right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Меню для телефона й планшета: <details>, працює і без скриптів */
+.menu {
+  display: none;
+  position: relative;
+}
+
+.menu summary {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+  list-style: none;
+  transition: background-color 0.2s ease;
+}
+
+.menu summary::-webkit-details-marker {
   display: none;
 }
 
-@media (max-width: 860px) {
+.menu summary:hover,
+.menu[open] summary {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.menu summary span,
+.menu summary span::before,
+.menu summary span::after {
+  display: block;
+  width: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: #fff;
+}
+
+.menu summary span {
+  position: relative;
+}
+
+.menu summary span::before,
+.menu summary span::after {
+  content: '';
+  position: absolute;
+  left: 0;
+}
+
+.menu summary span::before {
+  top: -6px;
+}
+
+.menu summary span::after {
+  top: 6px;
+}
+
+.menu nav {
+  position: absolute;
+  top: calc(100% + 20px);
+  right: -10px;
+  display: grid;
+  min-width: 230px;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 24px;
+  background: var(--night);
+  box-shadow: 0 24px 60px rgba(22, 10, 51, 0.4);
+}
+
+.menu nav a {
+  padding: 13px 16px;
+  border-radius: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.menu nav a:hover,
+.menu nav a[aria-current='page'] {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+@media (max-width: 1000px) {
   .nav {
     display: none;
   }
+
+  .menu {
+    display: block;
+  }
 }
 
-@media (max-width: 420px) {
+/* на телефоні номер у шапці стає круглою кнопкою з трубкою */
+@media (max-width: 520px) {
+  .top__call {
+    justify-content: center;
+    width: 44px;
+    padding: 0;
+  }
+
   .top__call-full {
     display: none;
   }
 
-  .top__call-short {
-    display: inline;
+  .top__call-ico {
+    display: block;
   }
 }
 
@@ -292,6 +398,14 @@ p {
   background-position: center top;
   -webkit-mask-image: radial-gradient(70% 85% at 78% 55%, #000 10%, transparent 75%);
   mask-image: radial-gradient(70% 85% at 78% 55%, #000 10%, transparent 75%);
+}
+
+.hero--page .wrap {
+  padding-block: clamp(132px, 15vw, 184px) clamp(48px, 7vw, 88px);
+}
+
+.hero--page h1 {
+  margin-top: 0;
 }
 
 .hero__grid {
@@ -529,6 +643,130 @@ h2 {
   justify-self: end;
 }
 
+.sec__head--row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+/* Карусель фото: звичайне горизонтальне прокручування з «прилипанням» */
+.car-nav {
+  display: flex;
+  flex: none;
+  gap: 8px;
+}
+
+.car-btn {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  border: 1.5px solid var(--rule);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--violet-deep);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.car-btn:hover {
+  border-color: var(--violet-deep);
+  background: var(--violet-deep);
+  color: #fff;
+}
+
+.car-btn svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.car {
+  display: flex;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  border-radius: var(--radius);
+}
+
+.car::-webkit-scrollbar {
+  display: none;
+}
+
+.car li {
+  flex: none;
+  height: clamp(300px, 44vw, 540px);
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--rule);
+  scroll-snap-align: start;
+}
+
+.car img {
+  display: block;
+  width: auto;
+  height: 100%;
+  /* широке фото не ширше за екран: зайве обрізається з боків порівну */
+  max-width: calc(100vw - 2 * var(--pad));
+  object-fit: cover;
+}
+
+/* Співпраця і вакансії: дві плитки поруч */
+.duo {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.duo .tile {
+  grid-column: auto;
+  scroll-margin-top: 96px;
+}
+
+.tile__foot {
+  margin-top: auto;
+  padding-top: 32px;
+}
+
+.tile__note {
+  margin-top: 20px;
+}
+
+.tile__note a {
+  font-weight: 700;
+  text-underline-offset: 4px;
+}
+
+.duo .tags {
+  margin: 0;
+  padding-top: 20px;
+}
+
+.btn--white {
+  background: #fff;
+  color: var(--violet-deep);
+}
+
+.btn--white:hover {
+  background: var(--mist);
+}
+
+@media (max-width: 860px) {
+  .duo {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 /* Каталог: три плитки різної ваги */
 .bento {
   display: grid;
@@ -561,7 +799,8 @@ h2 {
   fill: currentColor;
 }
 
-.tile h3 {
+.tile h3,
+.tile__title {
   margin-top: 20px;
   font-size: clamp(1.5rem, 2.4vw, 2.125rem);
   font-weight: 800;
@@ -1028,6 +1267,20 @@ h2 {
   color: #6b6f76;
 }
 
+.foot__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+}
+
+.foot__links a {
+  text-underline-offset: 4px;
+}
+
+.foot__links a:hover {
+  color: var(--violet-deep);
+}
+
 /* ───── Мобільний ───── */
 
 @media (max-width: 860px) {
@@ -1111,4 +1364,20 @@ h2 {
 .lost p {
   margin: 20px 0 32px;
   color: rgba(255, 255, 255, 0.82);
+}
+
+/* Дрібні уточнення для сторінки «Про нас» */
+.duo .tile__title {
+  margin-top: 0;
+}
+
+.car-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.car-btn:disabled:hover {
+  border-color: var(--rule);
+  background: #fff;
+  color: var(--violet-deep);
 }

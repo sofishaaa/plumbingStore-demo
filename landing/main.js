@@ -1,4 +1,4 @@
-// Регулятор температури в першому екрані.
+// 1. Регулятор температури в першому екрані головної сторінки.
 // Без цього файла сторінка працює так само: регулятор просто стоїть на 38°.
 (function () {
   var hero = document.querySelector('.hero');
@@ -78,4 +78,70 @@
     takeOver();
     set((Number(input.value) - MIN) / (MAX - MIN));
   });
+})();
+
+// Меню для телефона: закривати після вибору пункту, кліку повз або клавіші Esc.
+(function () {
+  var menu = document.querySelector('.menu');
+  if (!menu) return;
+
+  menu.addEventListener('click', function (event) {
+    if (event.target.closest('nav a')) menu.removeAttribute('open');
+  });
+
+  document.addEventListener('click', function (event) {
+    if (menu.open && !menu.contains(event.target)) menu.removeAttribute('open');
+  });
+
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && menu.open) {
+      menu.removeAttribute('open');
+      menu.querySelector('summary').focus();
+    }
+  });
+})();
+
+// Карусель фото: кнопки гортають на одне фото. Без скрипта стрічку можна гортати пальцем чи колесом.
+(function () {
+  var strip = document.querySelector('.car');
+  if (!strip) return;
+
+  var buttons = document.querySelectorAll('.car-btn');
+
+  function step(direction) {
+    var items = Array.prototype.slice.call(strip.children);
+    var left = strip.scrollLeft;
+    var target;
+    if (direction > 0) {
+      // перше фото, що починається правіше поточної позиції
+      target = items.find(function (li) {
+        return li.offsetLeft - strip.offsetLeft > left + 4;
+      });
+    } else {
+      // останнє фото, що починається лівіше
+      target = items.reverse().find(function (li) {
+        return li.offsetLeft - strip.offsetLeft < left - 4;
+      });
+    }
+    if (target) strip.scrollTo({ left: target.offsetLeft - strip.offsetLeft, behavior: 'smooth' });
+  }
+
+  function update() {
+    var max = strip.scrollWidth - strip.clientWidth;
+    buttons.forEach(function (button) {
+      var atEdge = Number(button.dataset.dir) < 0 ? strip.scrollLeft <= 2 : strip.scrollLeft >= max - 2;
+      button.disabled = atEdge;
+    });
+  }
+
+  buttons.forEach(function (button) {
+    button.addEventListener('click', function () {
+      step(Number(button.dataset.dir));
+    });
+  });
+
+  strip.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  window.addEventListener('load', update);
+  update();
 })();
