@@ -1,6 +1,9 @@
 # Заголовки для Cloudflare Pages (той самий формат розуміє Netlify)
+# - cloudflareinsights.com у CSP потрібен для лічильника Cloudflare Web Analytics
+# - Strict-Transport-Security (HSTS): браузер пів року відкриває сайт лише через HTTPS
 /*
-  Content-Security-Policy: default-src 'none'; script-src 'self'; img-src 'self'; style-src 'self'; font-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'none'; script-src 'self' https://static.cloudflareinsights.com; connect-src 'self' https://cloudflareinsights.com; img-src 'self'; style-src 'self'; font-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  Strict-Transport-Security: max-age=15552000
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
