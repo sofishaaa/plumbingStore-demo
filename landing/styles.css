@@ -712,6 +712,26 @@ h2 {
   scroll-snap-align: start;
 }
 
+.car li {
+  position: relative;
+}
+
+/* підпис на фото, якому потрібен контекст */
+.car__cap {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(22, 10, 51, 0.78);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
 .car img {
   display: block;
   width: auto;
