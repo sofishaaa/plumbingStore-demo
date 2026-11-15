@@ -23,15 +23,16 @@
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
 
-    <link rel="icon" type="image/png" href="../favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
-    <link rel="shortcut icon" href="../favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png" />
-    <link rel="manifest" href="../site.webmanifest" />
+    <link rel="icon" type="image/png" href="/favicon-48x48.png" sizes="48x48" />
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
 
     <link rel="preload" href="../fonts/montserrat-cyrillic-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="../styles.css" />
-    <script src="../main.js" defer></script>
+    <link rel="stylesheet" href="../styles.css?v=20261115-5" />
+    <script src="../main.js?v=20261115-5" defer></script>
   </head>
 
   <body>
@@ -69,99 +70,119 @@
       <div class="wrap">
         <h1>Про нас</h1>
         <p class="lede">
-          Сантех Студія — це команда, якій цікаво разом і в роботі, і поза нею. Їздимо на галузеві форуми й
-          виставки, розігруємо призи та збираємося не лише у справах.
+          «Сантех Студія» — це команда, якій цікаво разом і в роботі, і поза нею. Їздимо на галузеві форуми й
+          виставки, проводимо розіграші та збираємося не лише у справах.
         </p>
       </div>
     </div>
 
     <main class="wrap">
-      <section class="sec" aria-labelledby="life-title">
-        <div class="sec__head sec__head--row">
-          <h2 id="life-title">У нас цікаво й по-дружньому</h2>
-          <div class="car-nav">
-            <button class="car-btn" type="button" data-dir="-1" aria-label="Попереднє фото">
-              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7" /></svg>
-            </button>
-            <button class="car-btn" type="button" data-dir="1" aria-label="Наступне фото">
-              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7" /></svg>
-            </button>
-          </div>
-        </div>
+      <section class="sec" aria-label="Фото команди">
+        <div class="gal">
+          <button class="car-btn gal__prev" type="button" data-dir="-1" aria-label="Попереднє фото">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7" /></svg>
+          </button>
 
-        <ul class="car" tabindex="0" aria-label="Фото команди Сантех Студії, прокручується вбік">
+          <ul class="car" tabindex="0" aria-label="Фото команди, гортається вбік">
             <li>
-              <img src="../img/team/01.webp" alt="Команда Сантех Студії за вечерею в реберні" width="1440" height="1080" decoding="async" />
+              <figure class="shot">
+                <img src="../img/team/01.webp" alt="Команда Сантех Студії за вечерею в реберні" width="1440" height="1080" decoding="async" />
+              </figure>
             </li>
             <li>
-              <img src="../img/team/02.webp" alt="Троє колег у фірмових худі та поло Сантех Студії на галузевому форумі" width="810" height="1080" loading="lazy" decoding="async" />
+              <figure class="shot">
+                <img src="../img/team/02.webp" alt="Троє колег у фірмових худі та поло Сантех Студії на галузевому форумі" width="810" height="1080" loading="lazy" decoding="async" />
+              </figure>
             </li>
             <li>
-              <img src="../img/team/03.webp" alt="Виступ від Сантех Студії на сцені форуму" width="679" height="1080" loading="lazy" decoding="async" />
+              <figure class="shot">
+                <img src="../img/team/03.webp" alt="Виступ від Сантех Студії на сцені форуму" width="679" height="1080" loading="lazy" decoding="async" />
+              </figure>
             </li>
             <li>
-              <img src="../img/team/04.webp" alt="Стенд Сантех Студії на виставці поруч зі стендами обладнання для котелень" width="810" height="1080" loading="lazy" decoding="async" />
+              <figure class="shot">
+                <img src="../img/team/04.webp" alt="Стенд Сантех Студії на виставці поруч зі стендами обладнання для котелень" width="810" height="1080" loading="lazy" decoding="async" />
+              </figure>
             </li>
             <li>
-              <img src="../img/team/05.webp" alt="Дві учасниці команди на інженерно-сантехнічному форумі з бейджем Сантех Студії" width="810" height="1080" loading="lazy" decoding="async" />
+              <figure class="shot">
+                <img src="../img/team/05.webp" alt="Дві учасниці команди на інженерно-сантехнічному форумі з бейджем Сантех Студії" width="810" height="1080" loading="lazy" decoding="async" />
+              </figure>
             </li>
             <li>
-              <img src="../img/team/06.webp" alt="Розіграш призів на сцені: на екрані генератор випадкових чисел" width="768" height="1080" loading="lazy" decoding="async" />
+              <figure class="shot">
+                <img src="../img/team/06.webp" alt="Розіграш призів на сцені: на екрані генератор випадкових чисел" width="768" height="1080" loading="lazy" decoding="async" />
+              </figure>
             </li>
             <li>
-              <img src="../img/team/07.webp" alt="Повна зала учасників форуму" width="810" height="1080" loading="lazy" decoding="async" />
+              <figure class="shot">
+                <img src="../img/team/07.webp" alt="Повна зала учасників форуму" width="810" height="1080" loading="lazy" decoding="async" />
+              </figure>
             </li>
             <li>
-              <img src="../img/team/08.webp" alt="Розмова з відвідувачем форуму" width="608" height="1080" loading="lazy" decoding="async" />
+              <figure class="shot">
+                <img src="../img/team/08.webp" alt="Розмова з відвідувачем форуму" width="608" height="1080" loading="lazy" decoding="async" />
+              </figure>
             </li>
             <li>
-              <img src="../img/team/09.webp" alt="Фото на згадку після заходу, один із чоловіків у худі Сантех Студії" width="810" height="1080" loading="lazy" decoding="async" />
+              <figure class="shot">
+                <img src="../img/team/09.webp" alt="Фото на згадку після заходу, один із чоловіків у худі Сантех Студії" width="810" height="1080" loading="lazy" decoding="async" />
+              </figure>
             </li>
             <li>
-              <img src="../img/team/10.webp" alt="Команда за столом у закладі" width="1440" height="1080" loading="lazy" decoding="async" />
+              <figure class="shot">
+                <img src="../img/team/10.webp" alt="Команда за столом у закладі" width="1440" height="1080" loading="lazy" decoding="async" />
+              </figure>
             </li>
             <li>
-              <img src="../img/team/11.webp" alt="Неформальне спілкування з гостями на заході" width="649" height="1080" loading="lazy" decoding="async" />
+              <figure class="shot">
+                <img src="../img/team/11.webp" alt="Неформальне спілкування з гостями на заході" width="649" height="1080" loading="lazy" decoding="async" />
+              </figure>
             </li>
             <li>
-              <img src="../img/team/12.webp" alt="Колега з реквізитним кейсом купюр на командному квесті" width="810" height="1080" loading="lazy" decoding="async" />
-              <span class="car__cap">Командний квест</span>
+              <figure class="shot">
+                <img src="../img/team/12.webp" alt="Колега з реквізитним кейсом купюр на командному квесті" width="810" height="1080" loading="lazy" decoding="async" />
+                <figcaption class="shot__cap">Командний квест</figcaption>
+              </figure>
             </li>
-        </ul>
+          </ul>
+
+          <button class="car-btn gal__next" type="button" data-dir="1" aria-label="Наступне фото">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7" /></svg>
+          </button>
+
+          <p class="gal__count" aria-live="polite"><span class="gal__now">1</span> / 12</p>
+        </div>
       </section>
 
       <section class="sec duo" aria-label="Співпраця та вакансії">
-        <article class="tile tile--more" id="partnership">
-          <h2 class="tile__title">Співпраця</h2>
+        <article class="card" id="partnership">
+          <h2 class="card__title">Співпраця</h2>
           <p>
             Ми відкриті до співпраці й завжди раді новим партнерам. Маєте пропозицію чи ідею спільного проєкту?
-            Напишіть нам.
           </p>
-          <div class="tile__foot">
-            <a class="btn btn--white" href="mailto:santekhstudiia@gmail.com?subject=%D0%A1%D0%BF%D1%96%D0%B2%D0%BF%D1%80%D0%B0%D1%86%D1%8F"
-              >santekhstudiia@gmail.com</a
-            >
-          </div>
+          <p class="card__mail">
+            Зв’яжіться з нами:
+            <a href="mailto:santekhstudiia@gmail.com?subject=%D0%A1%D0%BF%D1%96%D0%B2%D0%BF%D1%80%D0%B0%D1%86%D1%8F">santekhstudiia@gmail.com</a>
+          </p>
+          <a class="btn btn--hot" href="mailto:santekhstudiia@gmail.com?subject=%D0%A1%D0%BF%D1%96%D0%B2%D0%BF%D1%80%D0%B0%D1%86%D1%8F"
+            >Написати нам</a
+          >
         </article>
 
-        <article class="tile tile--heat" id="vacancies">
-          <h2 class="tile__title">Вакансії</h2>
+        <article class="card" id="vacancies">
+          <h2 class="card__title">Вакансії</h2>
           <p>
-            Зараз відкритих вакансій немає, але ми із задоволенням розглянемо вашу кандидатуру. Зазвичай шукаємо:
+            Зараз відкритих вакансій немає, але ми із задоволенням розглянемо вашу кандидатуру. Зазвичай шукаємо
+            менеджерів з продажу та комірників.
           </p>
-          <ul class="tags">
-            <li>Менеджери з продажу</li>
-            <li>Комірники</li>
-          </ul>
-          <p class="tile__note">
-            Резюме надсилайте на пошту
-            <a href="mailto:santekhstudiia@gmail.com?subject=%D0%A0%D0%B5%D0%B7%D1%8E%D0%BC%D0%B5">santekhstudiia@gmail.com</a>.
+          <p class="card__mail">
+            Резюме надсилайте на пошту:
+            <a href="mailto:santekhstudiia@gmail.com?subject=%D0%A0%D0%B5%D0%B7%D1%8E%D0%BC%D0%B5">santekhstudiia@gmail.com</a>
           </p>
-          <div class="tile__foot">
-            <a class="btn btn--hot" href="mailto:santekhstudiia@gmail.com?subject=%D0%A0%D0%B5%D0%B7%D1%8E%D0%BC%D0%B5"
-              >Надіслати резюме</a
-            >
-          </div>
+          <a class="btn btn--hot" href="mailto:santekhstudiia@gmail.com?subject=%D0%A0%D0%B5%D0%B7%D1%8E%D0%BC%D0%B5"
+            >Надіслати резюме</a
+          >
         </article>
       </section>
 

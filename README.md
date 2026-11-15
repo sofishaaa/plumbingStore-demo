@@ -61,6 +61,10 @@ npm run dev                   # API :5001 + React :3000
 - **Домен** записаний у `landing/index.html` (canonical, Open Graph, JSON-LD),
   `landing/robots.txt` і `landing/sitemap.xml`. Замінити всюди однією командою:
   `grep -rl santekhstudiia.com.ua landing | xargs sed -i 's/santekhstudiia.com.ua/НОВИЙ-ДОМЕН/g'`
+- **Версія стилів і скриптів:** у посиланнях на `styles.css` і `main.js` стоїть `?v=...`
+  (`index.html`, `about/index.html`, `404.html`). Після кожної зміни цих двох файлів число треба
+  збільшити в усіх трьох сторінках, інакше браузери відвідувачів кілька годин показуватимуть
+  нову сторінку зі старими стилями.
 - **Локальний перегляд:** `npx serve landing`
 - **Запуск магазину:** у DNS домену замінити запис Cloudflare Pages на хостинг із Node.js
   (див. «Деплой» нижче), адреса сайту залишиться та сама.

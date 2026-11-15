@@ -191,6 +191,7 @@ p {
 }
 
 .nav a {
+  white-space: nowrap;
   padding: 8px 16px;
   border-radius: 999px;
   text-decoration: none;
@@ -321,7 +322,8 @@ p {
   background: rgba(255, 255, 255, 0.12);
 }
 
-@media (max-width: 1000px) {
+/* до 1100 px п'ять пунктів меню не вміщаються в один рядок — показуємо кнопку меню */
+@media (max-width: 1100px) {
   .nav {
     display: none;
   }
@@ -643,52 +645,44 @@ h2 {
   justify-self: end;
 }
 
-.sec__head--row {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-}
+/* ───── Сторінка «Про нас» ───── */
 
-/* Карусель фото: звичайне горизонтальне прокручування з «прилипанням» */
-.car-nav {
-  display: flex;
-  flex: none;
-  gap: 8px;
-}
-
-.car-btn {
+/* Карусель: одне фото за раз, по центру. Це звичайне горизонтальне прокручування
+   з «прилипанням», тож гортається і пальцем, і колесом, і без скриптів. */
+.gal {
+  --gal-h: clamp(300px, 56vw, 620px);
   display: grid;
-  place-items: center;
-  width: 52px;
-  height: 52px;
-  padding: 0;
-  border: 1.5px solid var(--rule);
-  border-radius: 50%;
-  background: #fff;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    'prev car next'
+    '. count .';
+  align-items: center;
+  gap: 16px 20px;
+}
+
+.gal__prev {
+  grid-area: prev;
+}
+
+.gal__next {
+  grid-area: next;
+}
+
+.gal__count {
+  grid-area: count;
+  justify-self: center;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #6b6f76;
+}
+
+.gal__now {
   color: var(--violet-deep);
-  cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-}
-
-.car-btn:hover {
-  border-color: var(--violet-deep);
-  background: var(--violet-deep);
-  color: #fff;
-}
-
-.car-btn svg {
-  width: 22px;
-  height: 22px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2.4;
-  stroke-linecap: round;
-  stroke-linejoin: round;
 }
 
 .car {
+  grid-area: car;
   display: flex;
-  gap: 16px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -696,28 +690,42 @@ h2 {
   overscroll-behavior-x: contain;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
-  border-radius: var(--radius);
 }
 
 .car::-webkit-scrollbar {
   display: none;
 }
 
+/* кожне фото займає всю ширину стрічки і стоїть у ній по центру */
 .car li {
-  flex: none;
-  height: clamp(300px, 44vw, 540px);
+  flex: 0 0 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--gal-h);
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+}
+
+.shot {
+  position: relative;
+  margin: 0;
+  max-width: 100%;
   overflow: hidden;
   border-radius: var(--radius);
   background: var(--rule);
-  scroll-snap-align: start;
 }
 
-.car li {
-  position: relative;
+/* фото показується цілим, без обрізання: обмежуємо і висоту, і ширину */
+.shot img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: var(--gal-h);
 }
 
-/* підпис на фото, якому потрібен контекст */
-.car__cap {
+.shot__cap {
   position: absolute;
   left: 14px;
   bottom: 14px;
@@ -732,53 +740,119 @@ h2 {
   line-height: 1.2;
 }
 
-.car img {
-  display: block;
-  width: auto;
-  height: 100%;
-  /* широке фото не ширше за екран: зайве обрізається з боків порівну */
-  max-width: calc(100vw - 2 * var(--pad));
-  object-fit: cover;
+.car-btn {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border: 1.5px solid var(--rule);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--violet-deep);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
 }
 
-/* Співпраця і вакансії: дві плитки поруч */
+.car-btn:hover {
+  border-color: var(--violet-deep);
+  background: var(--violet-deep);
+  color: #fff;
+}
+
+.car-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.car-btn:disabled:hover {
+  border-color: var(--rule);
+  background: #fff;
+  color: var(--violet-deep);
+}
+
+.car-btn svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* на телефоні кнопки стають під фото, щоб не забирати в нього ширину */
+@media (max-width: 760px) {
+  .gal {
+    --gal-h: clamp(280px, 104vw, 480px);
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      'car car car'
+      'prev count next';
+  }
+
+  .car-btn {
+    width: 48px;
+    height: 48px;
+  }
+}
+
+/* Співпраця і вакансії: дві однакові картки поруч */
 .duo {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px;
 }
 
-.duo .tile {
-  grid-column: auto;
+.card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: clamp(28px, 3.4vw, 48px);
+  border-radius: var(--radius);
+  color: #fff;
+  background: var(--night);
   scroll-margin-top: 96px;
 }
 
-.tile__foot {
-  margin-top: auto;
-  padding-top: 32px;
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(70% 90% at 100% 0%, rgba(252, 144, 79, 0.6), transparent 70%),
+    radial-gradient(60% 80% at 0% 100%, rgba(140, 82, 254, 0.55), transparent 70%);
 }
 
-.tile__note {
-  margin-top: 20px;
+.card__title {
+  font-size: clamp(1.625rem, 2.6vw, 2.25rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
 }
 
-.tile__note a {
+.card p {
+  max-width: 30em;
+  margin-top: 14px;
+}
+
+.card__mail a {
   font-weight: 700;
   text-underline-offset: 4px;
+  overflow-wrap: anywhere;
 }
 
-.duo .tags {
-  margin: 0;
-  padding-top: 20px;
+.card .btn {
+  margin-top: auto;
 }
 
-.btn--white {
-  background: #fff;
-  color: var(--violet-deep);
-}
-
-.btn--white:hover {
-  background: var(--mist);
+/* проміжок над кнопкою однаковий в обох картках */
+.card__mail {
+  padding-bottom: 28px;
 }
 
 @media (max-width: 860px) {
@@ -819,8 +893,7 @@ h2 {
   fill: currentColor;
 }
 
-.tile h3,
-.tile__title {
+.tile h3 {
   margin-top: 20px;
   font-size: clamp(1.5rem, 2.4vw, 2.125rem);
   font-weight: 800;
@@ -985,7 +1058,7 @@ h2 {
   border-color: rgba(255, 255, 255, 0.45);
 }
 
-/* Чорнова сантехніка: широка плитка на всю ширину */
+/* Інженерна сантехніка: широка плитка на всю ширину */
 .tile--rough {
   grid-column: 1 / -1;
   flex-direction: row;
@@ -1184,7 +1257,8 @@ h2 {
 }
 
 .bigphone {
-  display: inline-block;
+  display: block;
+  text-align: center;
   margin-top: 16px;
   font-size: clamp(2rem, 8.4vw, 7rem);
   font-weight: 800;
@@ -1384,20 +1458,4 @@ h2 {
 .lost p {
   margin: 20px 0 32px;
   color: rgba(255, 255, 255, 0.82);
-}
-
-/* Дрібні уточнення для сторінки «Про нас» */
-.duo .tile__title {
-  margin-top: 0;
-}
-
-.car-btn:disabled {
-  opacity: 0.35;
-  cursor: default;
-}
-
-.car-btn:disabled:hover {
-  border-color: var(--rule);
-  background: #fff;
-  color: var(--violet-deep);
 }

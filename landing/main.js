@@ -101,47 +101,40 @@
   });
 })();
 
-// Карусель фото: кнопки гортають на одне фото. Без скрипта стрічку можна гортати пальцем чи колесом.
+// Карусель на сторінці «Про нас»: одне фото за раз. Кнопки гортають на одне фото,
+// лічильник показує номер. Без скрипта стрічку можна гортати пальцем чи колесом.
 (function () {
   var strip = document.querySelector('.car');
   if (!strip) return;
 
   var buttons = document.querySelectorAll('.car-btn');
+  var now = document.querySelector('.gal__now');
+  var total = strip.children.length;
 
-  function step(direction) {
-    var items = Array.prototype.slice.call(strip.children);
-    var left = strip.scrollLeft;
-    var target;
-    if (direction > 0) {
-      // перше фото, що починається правіше поточної позиції
-      target = items.find(function (li) {
-        return li.offsetLeft - strip.offsetLeft > left + 4;
-      });
-    } else {
-      // останнє фото, що починається лівіше
-      target = items.reverse().find(function (li) {
-        return li.offsetLeft - strip.offsetLeft < left - 4;
-      });
-    }
-    if (target) strip.scrollTo({ left: target.offsetLeft - strip.offsetLeft, behavior: 'smooth' });
+  function index() {
+    return Math.min(total - 1, Math.max(0, Math.round(strip.scrollLeft / strip.clientWidth)));
+  }
+
+  function go(i) {
+    var target = Math.min(total - 1, Math.max(0, i));
+    strip.scrollTo({ left: target * strip.clientWidth, behavior: 'smooth' });
   }
 
   function update() {
-    var max = strip.scrollWidth - strip.clientWidth;
+    var i = index();
+    if (now) now.textContent = i + 1;
     buttons.forEach(function (button) {
-      var atEdge = Number(button.dataset.dir) < 0 ? strip.scrollLeft <= 2 : strip.scrollLeft >= max - 2;
-      button.disabled = atEdge;
+      button.disabled = Number(button.dataset.dir) < 0 ? i === 0 : i === total - 1;
     });
   }
 
   buttons.forEach(function (button) {
     button.addEventListener('click', function () {
-      step(Number(button.dataset.dir));
+      go(index() + Number(button.dataset.dir));
     });
   });
 
   strip.addEventListener('scroll', update, { passive: true });
   window.addEventListener('resize', update);
-  window.addEventListener('load', update);
   update();
 })();
