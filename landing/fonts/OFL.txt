@@ -1,9 +1,7 @@
-Copyright 2011 The Montserrat Project Authors (https://github.com/JulietaUla/Montserrat) Montserrat-Italic[wght].ttf: Copyright 2011 The Montserrat Project Authors (https://github.com/JulietaUla/Montserrat)
+Шрифти в цій папці поширюються за ліцензією SIL Open Font License 1.1 (текст нижче):
 
-This Font Software is licensed under the SIL Open Font License, Version 1.1.
-This license is copied below, and is also available with a FAQ at:
-http://scripts.sil.org/OFL
-
+Seymour One — Copyright 2011 The Seymour One Project Authors (https://github.com/googlefonts/seymourFont)
+Noto Sans — Copyright 2022 The Noto Project Authors (https://github.com/notofonts/latin-greek-cyrillic)
 
 -----------------------------------------------------------
 SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007

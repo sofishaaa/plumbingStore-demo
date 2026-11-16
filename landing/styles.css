@@ -1,20 +1,43 @@
-/* Сантех Студія — лендінг. Кольори й шрифт ті самі, що в магазині (frontend/src/assets/styles/index.css). */
+/* Сантех Студія — лендінг.
+   Вигляд спирається на фірмові матеріали: чотири кольори палітри без відтінків і світіння,
+   шрифт логотипа (Seymour One) у заголовках, Noto Sans у тексті, кнопки-прямокутники
+   з невеликим заокругленням. Єдиний градієнт на сайті — «температурне» поле біля регулятора. */
 
 @font-face {
-  font-family: 'Montserrat';
+  font-family: 'Seymour One';
   font-style: normal;
-  font-weight: 100 900;
+  font-weight: 400;
   font-display: swap;
-  src: url('fonts/montserrat-cyrillic-wght-normal.woff2') format('woff2');
+  src: url('fonts/seymour-one-cyrillic-400-normal.woff2') format('woff2');
   unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
 }
 
 @font-face {
-  font-family: 'Montserrat';
+  font-family: 'Seymour One';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('fonts/seymour-one-latin-400-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Noto Sans';
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
-  src: url('fonts/montserrat-latin-wght-normal.woff2') format('woff2');
+  src: url('fonts/noto-sans-cyrillic-wght-normal.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+@font-face {
+  font-family: 'Noto Sans';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('fonts/noto-sans-latin-wght-normal.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
     U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
     U+2212, U+2215, U+FEFF, U+FFFD;
@@ -29,23 +52,29 @@
 }
 
 :root {
+  /* фірмова палітра */
   --violet: #8c52fe;
-  --violet-deep: #7a3de8;
   --orange: #fc904f;
   --ink: #373d43;
-  --mist: #f8f7ff;
-  --night: #160a33;
-  --night-2: #23104f;
-  --rule: #e2d8ff;
+  --paper: #fff;
+
+  /* службові: темніший фіолетовий лише для тексту на білому й наведення на кнопки */
+  --violet-deep: #7239e6;
+  --fog: #f3f3f5;
+  --line: #d9dbdf;
+  --muted: #5d646b;
+
+  --display: 'Seymour One', 'Arial Black', 'Noto Sans', sans-serif;
 
   --pad: 32px;
-  --radius: 32px;
+  --radius: 20px;
+  --btn-radius: 10px;
 }
 
 @media (max-width: 760px) {
   :root {
     --pad: 16px;
-    --radius: 24px;
+    --radius: 16px;
   }
 }
 
@@ -63,12 +92,11 @@ html {
 
 body {
   margin: 0;
-  font-family: 'Montserrat', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Noto Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   font-size: 1.0625rem;
-  font-weight: 500;
   line-height: 1.6;
   color: var(--ink);
-  background: var(--mist);
+  background: var(--paper);
 }
 
 a {
@@ -82,10 +110,21 @@ p {
   margin: 0;
 }
 
+/* Seymour One має одне накреслення; браузеру не можна «дожирнювати» його самому */
+h1,
+h2,
+.tile h3,
+.card__title {
+  font-family: var(--display);
+  font-weight: 400;
+  font-synthesis: none;
+  text-wrap: balance;
+}
+
 :focus-visible {
-  outline: 3px solid var(--orange);
+  outline: 3px solid var(--violet-deep);
   outline-offset: 3px;
-  border-radius: 8px;
+  border-radius: 6px;
 }
 
 .wrap {
@@ -94,133 +133,128 @@ p {
   padding-inline: var(--pad);
 }
 
-/* ───── Кнопки ───── */
+/* ───── Кнопки: як у фірмовому наборі — заокруглений прямокутник ───── */
 
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-height: 56px;
-  padding: 14px 30px;
+  padding: 14px 28px;
   border: 2px solid transparent;
-  border-radius: 999px;
+  border-radius: var(--btn-radius);
   font: inherit;
+  font-size: 1.125rem;
   font-weight: 700;
   line-height: 1.2;
   text-decoration: none;
   white-space: nowrap;
-  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease,
-    box-shadow 0.2s ease, border-color 0.2s ease;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
-.btn:hover {
-  transform: translateY(-2px);
-}
-
-.btn:active {
-  transform: translateY(0);
-}
-
-.btn--hot {
-  background: var(--orange);
-  color: var(--night);
-  box-shadow: 0 10px 30px rgba(252, 144, 79, 0.35);
-}
-
-.btn--hot:hover {
-  background: #ffa268;
-  box-shadow: 0 14px 40px rgba(252, 144, 79, 0.5);
-}
-
-.btn--glass {
-  border-color: rgba(255, 255, 255, 0.28);
-  background: rgba(255, 255, 255, 0.06);
+.btn--main {
+  background: var(--violet);
   color: #fff;
 }
 
-.btn--glass:hover {
-  border-color: #fff;
-  background: rgba(255, 255, 255, 0.14);
+.btn--main:hover {
+  background: var(--violet-deep);
 }
 
-/* ───── Шапка: «плаваюча» скляна панель ───── */
+.btn--line {
+  border-color: var(--violet);
+  color: var(--violet-deep);
+}
+
+.btn--line:hover {
+  background: var(--violet);
+  color: #fff;
+}
+
+/* ───── Шапка ───── */
 
 .top {
   position: sticky;
-  top: 12px;
+  top: 0;
   z-index: 20;
-  height: 64px;
-  margin: 12px auto -76px;
-  max-width: calc(1264px - 2 * var(--pad));
-  width: calc(100% - 2 * var(--pad));
-  padding: 0 10px 0 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  color: #fff;
-  background: rgba(22, 10, 51, 0.72);
-  -webkit-backdrop-filter: blur(16px) saturate(1.4);
-  backdrop-filter: blur(16px) saturate(1.4);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 999px;
-  box-shadow: 0 10px 40px rgba(22, 10, 51, 0.25);
+  height: 72px;
+  padding-inline: max(var(--pad), calc(50% - 600px));
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
 }
 
+/* назва в шапці набрана так само, як у логотипі */
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
+  gap: 12px;
+  font-family: var(--display);
+  font-size: 0.9375rem;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
   text-decoration: none;
   white-space: nowrap;
 }
 
 .brand img {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   display: block;
 }
 
 .nav {
   display: flex;
   gap: 4px;
-  font-size: 0.9375rem;
+  font-size: 1rem;
   font-weight: 600;
 }
 
 .nav a {
-  white-space: nowrap;
-  padding: 8px 16px;
-  border-radius: 999px;
+  padding: 8px 14px;
   text-decoration: none;
-  color: rgba(255, 255, 255, 0.82);
-  transition: background-color 0.2s ease, color 0.2s ease;
+  white-space: nowrap;
+  transition: color 0.15s ease;
 }
 
 .nav a:hover {
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
+  color: var(--violet-deep);
+}
+
+.nav a[aria-current='page'] {
+  text-decoration: underline;
+  text-decoration-color: var(--violet);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 8px;
+}
+
+.top__right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .top__call {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  padding: 0 20px;
-  border-radius: 999px;
-  background: #fff;
-  color: var(--night);
-  font-size: 0.9375rem;
+  padding: 0 18px;
+  border-radius: var(--btn-radius);
+  background: var(--violet);
+  color: #fff;
+  font-size: 1rem;
   font-weight: 700;
   text-decoration: none;
   white-space: nowrap;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.15s ease;
 }
 
 .top__call:hover {
-  background: var(--orange);
+  background: var(--violet-deep);
 }
 
 .top__call-ico {
@@ -228,17 +262,6 @@ p {
   width: 22px;
   height: 22px;
   fill: currentColor;
-}
-
-.nav a[aria-current='page'] {
-  background: rgba(255, 255, 255, 0.14);
-  color: #fff;
-}
-
-.top__right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
 /* Меню для телефона й планшета: <details>, працює і без скриптів */
@@ -252,11 +275,11 @@ p {
   place-items: center;
   width: 44px;
   height: 44px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.12);
+  border-radius: var(--btn-radius);
+  background: var(--fog);
   cursor: pointer;
   list-style: none;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.15s ease;
 }
 
 .menu summary::-webkit-details-marker {
@@ -265,17 +288,16 @@ p {
 
 .menu summary:hover,
 .menu[open] summary {
-  background: rgba(255, 255, 255, 0.22);
+  background: var(--line);
 }
 
 .menu summary span,
 .menu summary span::before,
 .menu summary span::after {
   display: block;
-  width: 18px;
+  width: 20px;
   height: 2px;
-  border-radius: 2px;
-  background: #fff;
+  background: var(--ink);
 }
 
 .menu summary span {
@@ -299,27 +321,26 @@ p {
 
 .menu nav {
   position: absolute;
-  top: calc(100% + 20px);
-  right: -10px;
+  top: calc(100% + 15px);
+  right: 0;
   display: grid;
-  min-width: 230px;
-  padding: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 24px;
-  background: var(--night);
-  box-shadow: 0 24px 60px rgba(22, 10, 51, 0.4);
+  min-width: 240px;
+  padding: 8px;
+  border: 2px solid var(--ink);
+  border-radius: 14px;
+  background: var(--paper);
 }
 
 .menu nav a {
-  padding: 13px 16px;
-  border-radius: 14px;
+  padding: 12px 14px;
+  border-radius: 8px;
   font-weight: 600;
   text-decoration: none;
 }
 
 .menu nav a:hover,
 .menu nav a[aria-current='page'] {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--fog);
 }
 
 /* до 1100 px п'ять пунктів меню не вміщаються в один рядок — показуємо кнопку меню */
@@ -333,8 +354,22 @@ p {
   }
 }
 
-/* на телефоні номер у шапці стає круглою кнопкою з трубкою */
+/* на телефоні номер у шапці стає квадратною кнопкою з трубкою */
 @media (max-width: 520px) {
+  .top {
+    height: 64px;
+  }
+
+  .brand {
+    gap: 10px;
+    font-size: 0.8125rem;
+  }
+
+  .brand img {
+    width: 40px;
+    height: 40px;
+  }
+
   .top__call {
     justify-content: center;
     width: 44px;
@@ -350,19 +385,14 @@ p {
   }
 }
 
-/* ───── Hero ───── */
+/* ───── Перший екран ───── */
 
 .hero {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  color: #fff;
-  background: var(--night);
-  border-radius: 0 0 clamp(28px, 4vw, 56px) clamp(28px, 4vw, 56px);
   /* оголошено тут, а не в :root, щоб колір перераховувався разом із --t */
   --temp: color-mix(in oklab, var(--violet), var(--orange) calc(var(--t) * 100%));
 }
 
+/* при відкритті сторінки регулятор «нагрівається» з холодної до 38° */
 @media (prefers-reduced-motion: no-preference) {
   .hero {
     animation: warm-up 2.2s cubic-bezier(0.2, 0.7, 0.2, 1) 0.35s backwards;
@@ -375,107 +405,92 @@ p {
   }
 }
 
-/* світіння: постійне фіолетове зліва і «температурне» за регулятором */
-.hero::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -2;
-  background:
-    radial-gradient(60% 70% at 10% 0%, rgba(140, 82, 254, 0.55), transparent 70%),
-    radial-gradient(46% 62% at 80% 58%, color-mix(in oklab, var(--temp), transparent 30%), transparent 72%),
-    radial-gradient(40% 50% at 100% 100%, color-mix(in oklab, var(--temp), transparent 62%), transparent 70%);
-}
-
-/* плитка: тонка сітка, що проступає біля регулятора */
-.hero::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
-  background-size: 76px 76px;
-  background-position: center top;
-  -webkit-mask-image: radial-gradient(70% 85% at 78% 55%, #000 10%, transparent 75%);
-  mask-image: radial-gradient(70% 85% at 78% 55%, #000 10%, transparent 75%);
-}
-
-.hero--page .wrap {
-  padding-block: clamp(132px, 15vw, 184px) clamp(48px, 7vw, 88px);
-}
-
-.hero--page h1 {
-  margin-top: 0;
-}
-
 .hero__grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-  align-items: center;
-  gap: 48px;
-  min-height: min(100svh, 860px);
-  padding-block: 150px 96px;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  align-items: stretch;
+  gap: clamp(32px, 4vw, 64px);
+  padding-block: clamp(24px, 3.4vw, 48px);
 }
 
-.chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 16px 8px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.07);
-  font-size: 0.875rem;
-  font-weight: 600;
-}
-
-.chip::before {
-  content: '';
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--orange);
-  box-shadow: 0 0 0 4px rgba(252, 144, 79, 0.25);
+.hero__text {
+  align-self: center;
+  padding-block: 16px;
 }
 
 h1 {
-  margin-top: 28px;
-  font-size: clamp(2.5rem, 6.6vw, 5.75rem);
-  font-weight: 800;
-  line-height: 0.98;
-  letter-spacing: -0.045em;
-  text-wrap: balance;
+  font-size: clamp(2rem, 4.5vw, 3.75rem);
+  line-height: 1.06;
 }
 
 .lede {
-  max-width: 32em;
-  margin-top: 28px;
-  font-size: clamp(1.0625rem, 1.5vw, 1.25rem);
+  max-width: 33em;
+  margin-top: clamp(20px, 2.4vw, 28px);
+  font-size: clamp(1.0625rem, 1.45vw, 1.25rem);
   line-height: 1.55;
-  color: rgba(255, 255, 255, 0.82);
 }
 
 .actions {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  margin-top: 40px;
+  margin-top: clamp(28px, 3vw, 40px);
 }
 
-/* ───── Регулятор температури ───── */
+.soon {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.soon::before {
+  content: '';
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--orange);
+}
+
+/* ───── Регулятор температури ─────
+   Поле за регулятором показує температуру кольором: знизу піднімається помаранчевий,
+   згори лишається фіолетовий. Межа між ними рухається разом із --t. */
 
 .dial-box {
-  justify-self: center;
-  text-align: center;
+  display: grid;
+  place-items: center;
+  min-height: clamp(380px, 46vw, 600px);
+  padding: clamp(24px, 4vw, 56px);
+  border-radius: var(--radius);
+  background: linear-gradient(
+    to top,
+    var(--orange) calc(var(--t) * 150% - 50%),
+    var(--violet) calc(var(--t) * 150%)
+  );
 }
 
+@supports (background: linear-gradient(in oklab, red, blue)) {
+  .dial-box {
+    background: linear-gradient(
+      to top in oklab,
+      var(--orange) calc(var(--t) * 150% - 50%),
+      var(--violet) calc(var(--t) * 150%)
+    );
+  }
+}
+
+/* сам прилад: темна шайба зі шкалою і біла ручка */
 .dial {
+  container-type: inline-size;
   position: relative;
-  width: min(440px, 36vw);
+  width: min(420px, 100%);
   aspect-ratio: 1;
   border-radius: 50%;
+  background: var(--ink);
   cursor: grab;
   touch-action: pan-y;
   -webkit-user-select: none;
@@ -488,29 +503,35 @@ h1 {
 }
 
 /* шкала з поділок: 270° від холодної до гарячої */
-.dial__scale {
-  opacity: 0.28;
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: conic-gradient(from 225deg, var(--violet) 0deg, var(--orange) 270deg, transparent 270deg);
+.dial__scale,
+.dial__fill::before {
+  background: #fff;
   -webkit-mask-image:
-    repeating-conic-gradient(from 225deg, #000 0deg 1.3deg, transparent 1.3deg 5deg),
-    radial-gradient(closest-side, transparent 86%, #000 86.5%);
+    repeating-conic-gradient(from 225deg, #000 0deg 1.4deg, transparent 1.4deg 6deg),
+    conic-gradient(from 225deg, #000 271.4deg, transparent 271.4deg),
+    radial-gradient(closest-side, transparent 85%, #000 85.5%);
   mask-image:
-    repeating-conic-gradient(from 225deg, #000 0deg 1.3deg, transparent 1.3deg 5deg),
-    radial-gradient(closest-side, transparent 86%, #000 86.5%);
+    repeating-conic-gradient(from 225deg, #000 0deg 1.4deg, transparent 1.4deg 6deg),
+    conic-gradient(from 225deg, #000 271.4deg, transparent 271.4deg),
+    radial-gradient(closest-side, transparent 85%, #000 85.5%);
   -webkit-mask-composite: source-in;
   mask-composite: intersect;
+}
+
+.dial__scale {
+  position: absolute;
+  inset: 6%;
+  border-radius: 50%;
+  opacity: 0.3;
 }
 
 /* активна частина шкали */
 .dial__fill {
   position: absolute;
-  inset: 0;
+  inset: 6%;
   border-radius: 50%;
-  -webkit-mask-image: conic-gradient(from 225deg, #000 calc(var(--t) * 270deg), transparent calc(var(--t) * 270deg));
-  mask-image: conic-gradient(from 225deg, #000 calc(var(--t) * 270deg), transparent calc(var(--t) * 270deg));
+  -webkit-mask-image: conic-gradient(from 225deg, #000 calc(var(--t) * 270deg + 1.4deg), transparent calc(var(--t) * 270deg + 1.4deg));
+  mask-image: conic-gradient(from 225deg, #000 calc(var(--t) * 270deg + 1.4deg), transparent calc(var(--t) * 270deg + 1.4deg));
 }
 
 .dial__fill::before {
@@ -518,29 +539,13 @@ h1 {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: conic-gradient(from 225deg, var(--violet) 0deg, var(--orange) 270deg, transparent 270deg);
-  -webkit-mask-image:
-    repeating-conic-gradient(from 225deg, #000 0deg 1.3deg, transparent 1.3deg 5deg),
-    radial-gradient(closest-side, transparent 86%, #000 86.5%);
-  mask-image:
-    repeating-conic-gradient(from 225deg, #000 0deg 1.3deg, transparent 1.3deg 5deg),
-    radial-gradient(closest-side, transparent 86%, #000 86.5%);
-  -webkit-mask-composite: source-in;
-  mask-composite: intersect;
 }
 
 .dial__knob {
   position: absolute;
-  inset: 13%;
+  inset: 18%;
   border-radius: 50%;
-  background:
-    radial-gradient(120% 120% at 30% 15%, rgba(255, 255, 255, 0.16), transparent 45%),
-    linear-gradient(150deg, #34197a, #170a38 70%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.28),
-    inset 0 -18px 40px rgba(0, 0, 0, 0.35),
-    0 30px 70px rgba(5, 0, 20, 0.6),
-    0 0 110px color-mix(in oklab, var(--temp), transparent 45%);
+  background: var(--paper);
 }
 
 /* позначка на ручці */
@@ -553,14 +558,13 @@ h1 {
 .dial__mark::before {
   content: '';
   position: absolute;
-  top: 7%;
+  top: 5%;
   left: 50%;
-  width: 3.2%;
-  height: 11%;
-  margin-left: -1.6%;
+  width: 4%;
+  height: 12%;
+  margin-left: -2%;
   border-radius: 99px;
   background: var(--temp);
-  box-shadow: 0 0 18px var(--temp);
 }
 
 .dial__temp {
@@ -568,11 +572,17 @@ h1 {
   inset: 0;
   display: grid;
   place-content: center;
-  font-size: clamp(3.5rem, 8.4vw, 7rem);
-  font-weight: 800;
+  font-family: var(--display);
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
   line-height: 1;
-  letter-spacing: -0.05em;
   font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+@supports (container-type: inline-size) {
+  .dial__temp {
+    font-size: 17cqi;
+  }
 }
 
 .dial__val {
@@ -581,13 +591,13 @@ h1 {
 
 .dial__val sup {
   position: absolute;
-  top: 0.35em;
-  left: calc(100% + 0.2em);
+  top: 0.1em;
+  left: calc(100% + 0.25em);
+  font-family: 'Noto Sans', sans-serif;
   font-size: 0.3em;
   font-weight: 700;
   line-height: 1;
-  letter-spacing: 0;
-  color: var(--temp);
+  color: var(--muted);
 }
 
 /* справжній повзунок для клавіатури та скрінрідерів */
@@ -602,8 +612,8 @@ h1 {
 }
 
 .dial:has(.dial__input:focus-visible) {
-  outline: 3px solid var(--orange);
-  outline-offset: 8px;
+  outline: 3px solid #fff;
+  outline-offset: 6px;
 }
 
 /* підказка стоїть у розриві шкали знизу */
@@ -611,41 +621,457 @@ h1 {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 1%;
+  bottom: 6.5%;
   font-size: 0.875rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.66);
+  line-height: 1.2;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.85);
   pointer-events: none;
+}
+
+@supports (container-type: inline-size) {
+  .dial__hint {
+    font-size: clamp(0.75rem, 3.5cqi, 0.9375rem);
+  }
 }
 
 /* ───── Секції ───── */
 
 .sec {
-  padding-top: clamp(72px, 10vw, 136px);
+  padding-top: clamp(56px, 7.5vw, 104px);
 }
 
 .sec__head {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
-  align-items: end;
-  gap: 24px 48px;
-  margin-bottom: clamp(28px, 4vw, 48px);
+  margin-bottom: clamp(24px, 3.4vw, 40px);
 }
 
 h2 {
-  font-size: clamp(2rem, 4.6vw, 3.75rem);
-  font-weight: 800;
-  line-height: 1.02;
-  letter-spacing: -0.04em;
-  text-wrap: balance;
+  font-size: clamp(1.625rem, 3.6vw, 2.875rem);
+  line-height: 1.1;
 }
 
-.sec__head p {
-  max-width: 30em;
-  justify-self: end;
+/* ───── Асортимент: чотири однакові плитки, 2 × 2 на комп'ютері, стовпчиком на телефоні.
+   Кожна в одному з фірмових кольорів; усередині [іконка + назва] і перелік. ───── */
+
+.bento {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
+  gap: 20px;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  padding: clamp(22px, 3vw, 40px);
+  border-radius: var(--radius);
+  --row: rgba(255, 255, 255, 0.3);
+}
+
+.tile__lead {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+/* іконка в заокругленому квадраті */
+.chip-ico {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+}
+
+.chip-ico svg {
+  width: 36px;
+  height: 36px;
+  fill: currentColor;
+}
+
+.tile h3 {
+  font-size: clamp(1.125rem, 1.75vw, 1.5rem);
+  line-height: 1.15;
+}
+
+/* перелік, як у прайсі: рядки з тонкими лініями, у два стовпчики, коли вміщаються */
+.items {
+  list-style: none;
+  margin: clamp(20px, 2.4vw, 28px) 0 0;
+  padding: 0;
+  columns: 9em 2;
+  column-gap: 28px;
+  font-size: 1.1875rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.items li {
+  break-inside: avoid;
+  padding-block: 9px;
+  border-top: 1px solid var(--row);
+}
+
+.tile--bath {
+  color: #fff;
+  background: var(--violet);
+}
+
+.tile--bath .chip-ico {
+  color: var(--violet);
+  background: #fff;
+}
+
+.tile--heat {
+  color: var(--ink);
+  background: var(--orange);
+  --row: rgba(55, 61, 67, 0.3);
+}
+
+.tile--heat .chip-ico {
+  color: var(--orange);
+  background: var(--ink);
+}
+
+.tile--more {
+  color: #fff;
+  background: var(--ink);
+  --row: rgba(255, 255, 255, 0.22);
+}
+
+.tile--more .chip-ico {
+  color: var(--ink);
+  background: #fff;
+}
+
+.tile--rough {
+  color: var(--ink);
+  background: var(--fog);
+  --row: var(--line);
+}
+
+.tile--rough .chip-ico {
+  color: #fff;
+  background: var(--violet);
+}
+
+/* вужче за 960 px перелік у плитці вже не стає у два стовпчики — плитки йдуть одна під одною */
+@media (max-width: 960px) {
+  .bento {
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .chip-ico {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+  }
+
+  .chip-ico svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  .tile__lead {
+    gap: 14px;
+  }
+}
+
+/* ───── Як замовити: три кроки на одній «трубі» ───── */
+
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 40px;
+  counter-reset: step;
+}
+
+.steps li {
+  position: relative;
+  padding-top: 96px;
+  counter-increment: step;
+}
+
+/* труба від кроку до кроку */
+.steps li::before {
+  content: '';
+  position: absolute;
+  top: 34px;
+  left: 72px;
+  right: -40px;
+  height: 4px;
+  background: var(--ink);
+}
+
+.steps li:last-child::before {
+  display: none;
+}
+
+.steps__num {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 14px;
+  font-family: var(--display);
+  font-size: 2rem;
+  line-height: 1;
+  color: #fff;
+  background: var(--violet);
+}
+
+.steps__num::before {
+  content: counter(step);
+}
+
+.steps li:nth-child(2) .steps__num {
+  color: var(--ink);
+  background: var(--orange);
+}
+
+.steps li:nth-child(3) .steps__num {
+  background: var(--ink);
+}
+
+.steps h3 {
+  font-size: 1.375rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.steps p {
+  margin-top: 8px;
+  max-width: 24em;
+}
+
+@media (max-width: 760px) {
+  .steps {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .steps li {
+    min-height: 56px;
+    padding: 0 0 0 76px;
+  }
+
+  .steps li::before {
+    top: 56px;
+    bottom: -28px;
+    left: 26px;
+    right: auto;
+    width: 4px;
+    height: auto;
+  }
+
+  .steps__num {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    font-size: 1.5rem;
+  }
+
+  .steps h3 {
+    font-size: 1.25rem;
+  }
+}
+
+/* ───── Контакти ───── */
+
+.contact {
+  container-type: inline-size;
+  padding: clamp(28px, 5.4vw, 80px);
+  border-radius: var(--radius);
+  color: #fff;
+  background: var(--ink);
+}
+
+.contact :focus-visible,
+.card :focus-visible {
+  outline-color: var(--orange);
+}
+
+/* у цьому блоці шрифтом логотипа набрано лише номер — він тут головний */
+.contact h2 {
+  font-family: inherit;
+  font-size: clamp(1.0625rem, 1.7vw, 1.375rem);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.bigphone {
+  display: block;
+  margin-top: clamp(12px, 2vw, 20px);
+  font-family: var(--display);
+  font-size: clamp(1.25rem, 5.6vw, 4.75rem);
+  line-height: 1.05;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  color: #fff;
+  transition: color 0.15s ease;
+}
+
+/* Номер займає рівно всю ширину блоку: 100cqi = внутрішня ширина .contact,
+   число в дільнику = ширина цього номера в em шрифтом Seymour One. */
+@supports (container-type: inline-size) {
+  .bigphone {
+    font-size: calc(100cqi / 14.72);
+  }
+}
+
+.bigphone:hover {
+  color: var(--orange);
+}
+
+.contact__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 32px;
+  margin-top: clamp(28px, 4.4vw, 56px);
+}
+
+@media (max-width: 980px) {
+  .contact__row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.where {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 24px;
+}
+
+.contact address {
+  font-style: normal;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.hours {
+  margin-top: 14px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.socials {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 20px 0 0;
+  padding: 0;
+}
+
+.where__map,
+.socials a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  border-radius: var(--btn-radius);
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.where__map:hover,
+.socials a:hover {
+  border-color: #fff;
+  background: #fff;
+  color: var(--ink);
+}
+
+.contact .actions {
+  margin-top: 0;
+}
+
+/* другорядні кнопки на темному тлі */
+.contact .btn--line,
+.card .btn--line,
+.lost .btn--line {
+  border-color: rgba(255, 255, 255, 0.6);
+  color: #fff;
+}
+
+.contact .btn--line:hover,
+.card .btn--line:hover {
+  border-color: #fff;
+  background: #fff;
+  color: var(--ink);
+}
+
+/* ───── Футер ───── */
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 6px 24px;
+  padding-block: 32px 40px;
+  font-size: 0.9375rem;
+  color: var(--muted);
+}
+
+.foot__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+}
+
+.foot__links a {
+  text-underline-offset: 4px;
+}
+
+.foot__links a:hover {
+  color: var(--violet-deep);
 }
 
 /* ───── Сторінка «Про нас» ───── */
+
+.hero--page .wrap {
+  display: grid;
+  grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
+  align-items: end;
+  gap: 20px 48px;
+  padding-top: clamp(40px, 6vw, 88px);
+}
+
+.hero--page .lede {
+  margin-top: 0;
+  justify-self: end;
+}
+
+.hero--page + main > .sec:first-child {
+  padding-top: clamp(32px, 4.6vw, 56px);
+}
+
+@media (max-width: 860px) {
+  .hero--page .wrap {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hero--page .lede {
+    justify-self: start;
+  }
+}
 
 /* Карусель: одне фото за раз, по центру. Це звичайне горизонтальне прокручування
    з «прилипанням», тож гортається і пальцем, і колесом, і без скриптів. */
@@ -673,7 +1099,7 @@ h2 {
   justify-self: center;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  color: #6b6f76;
+  color: var(--muted);
 }
 
 .gal__now {
@@ -690,6 +1116,8 @@ h2 {
   overscroll-behavior-x: contain;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
+  border-radius: var(--radius);
+  background: var(--fog);
 }
 
 .car::-webkit-scrollbar {
@@ -711,9 +1139,6 @@ h2 {
   position: relative;
   margin: 0;
   max-width: 100%;
-  overflow: hidden;
-  border-radius: var(--radius);
-  background: var(--rule);
 }
 
 /* фото показується цілим, без обрізання: обмежуємо і висоту, і ширину */
@@ -727,13 +1152,11 @@ h2 {
 
 .shot__cap {
   position: absolute;
-  left: 14px;
-  bottom: 14px;
-  padding: 8px 16px;
-  border-radius: 999px;
-  background: rgba(22, 10, 51, 0.78);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
+  left: 12px;
+  bottom: 12px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: var(--ink);
   color: #fff;
   font-size: 0.9375rem;
   font-weight: 700;
@@ -746,29 +1169,23 @@ h2 {
   width: 56px;
   height: 56px;
   padding: 0;
-  border: 1.5px solid var(--rule);
-  border-radius: 50%;
-  background: #fff;
-  color: var(--violet-deep);
+  border: 0;
+  border-radius: var(--btn-radius);
+  background: var(--violet);
+  color: #fff;
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .car-btn:hover {
-  border-color: var(--violet-deep);
   background: var(--violet-deep);
-  color: #fff;
 }
 
-.car-btn:disabled {
-  opacity: 0.35;
-  cursor: default;
-}
-
+.car-btn:disabled,
 .car-btn:disabled:hover {
-  border-color: var(--rule);
-  background: #fff;
-  color: var(--violet-deep);
+  background: var(--fog);
+  color: #9aa0a6;
+  cursor: default;
 }
 
 .car-btn svg {
@@ -776,7 +1193,7 @@ h2 {
   height: 22px;
   fill: none;
   stroke: currentColor;
-  stroke-width: 2.4;
+  stroke-width: 2.6;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
@@ -785,7 +1202,6 @@ h2 {
 @media (max-width: 760px) {
   .gal {
     --gal-h: clamp(280px, 104vw, 480px);
-    grid-template-columns: auto minmax(0, 1fr) auto;
     grid-template-areas:
       'car car car'
       'prev count next';
@@ -805,34 +1221,19 @@ h2 {
 }
 
 .card {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: clamp(28px, 3.4vw, 48px);
+  padding: clamp(24px, 3.4vw, 48px);
   border-radius: var(--radius);
   color: #fff;
-  background: var(--night);
+  background: var(--ink);
   scroll-margin-top: 96px;
 }
 
-.card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background:
-    radial-gradient(70% 90% at 100% 0%, rgba(252, 144, 79, 0.6), transparent 70%),
-    radial-gradient(60% 80% at 0% 100%, rgba(140, 82, 254, 0.55), transparent 70%);
-}
-
 .card__title {
-  font-size: clamp(1.625rem, 2.6vw, 2.25rem);
-  font-weight: 800;
+  font-size: clamp(1.375rem, 2.3vw, 1.875rem);
   line-height: 1.1;
-  letter-spacing: -0.03em;
 }
 
 .card p {
@@ -861,442 +1262,26 @@ h2 {
   }
 }
 
-/* Каталог: чотири однакові плитки, 2 × 2 на комп'ютері, в один стовпчик на телефоні.
-   Усередині всі влаштовані однаково: [іконка + назва], під ними список. */
-.bento {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  grid-auto-rows: 1fr;
-  gap: 20px;
-}
-
-.tile {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  padding: clamp(24px, 3vw, 40px);
-  border-radius: var(--radius);
-}
-
-.tile__lead {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-}
-
-/* Іконка в заокругленому квадраті */
-.chip-ico {
-  flex: none;
-  display: grid;
-  place-items: center;
-  width: 72px;
-  height: 72px;
-  border-radius: 22px;
-}
-
-.chip-ico svg {
-  width: 40px;
-  height: 40px;
-  fill: currentColor;
-}
-
-.tile h3 {
-  font-size: clamp(1.5rem, 2.3vw, 2rem);
-  font-weight: 800;
-  line-height: 1.1;
-  letter-spacing: -0.03em;
-}
-
-.tags {
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 0;
-  padding: 28px 0 0;
-}
-
-.tags li {
-  padding: 9px 18px;
-  border: 1.5px solid currentColor;
-  border-radius: 999px;
-  font-size: 1rem;
-  font-weight: 600;
-  line-height: 1.3;
-}
-
-.tile--bath {
-  background: #fff;
-  box-shadow: 0 1px 0 var(--rule), 0 24px 60px rgba(140, 82, 254, 0.1);
-}
-
-.tile--bath .chip-ico {
-  color: #fff;
-  background: linear-gradient(145deg, #a274ff, #6a2fd6);
-}
-
-.tile--bath .tags li {
-  border-color: var(--rule);
-  background: var(--mist);
-}
-
-.tile--heat {
-  color: #fff;
-  background: var(--night);
-}
-
-.tile--heat::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background:
-    radial-gradient(70% 90% at 100% 0%, rgba(252, 144, 79, 0.75), transparent 70%),
-    radial-gradient(60% 80% at 0% 100%, rgba(140, 82, 254, 0.5), transparent 70%);
-}
-
-.tile--heat .chip-ico {
-  color: var(--orange);
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-}
-
-.tile--heat .tags li {
-  border-color: rgba(255, 255, 255, 0.35);
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.tile--more {
-  color: #fff;
-  background: var(--violet-deep);
-}
-
-.tile--more .chip-ico {
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-}
-
-.tile--more .tags li {
-  border-color: rgba(255, 255, 255, 0.45);
-}
-
-.tile--rough {
-  background: #ebe4ff;
-}
-
-.tile--rough .chip-ico {
-  color: #fff;
-  background: linear-gradient(145deg, #a274ff, #6a2fd6);
-}
-
-.tile--rough .tags li {
-  border-color: rgba(122, 61, 232, 0.3);
-  background: #fff;
-}
-
-@media (max-width: 860px) {
-  .bento {
-    grid-template-columns: minmax(0, 1fr);
-    grid-auto-rows: auto;
-  }
-}
-
-/* Як замовити: послідовність, тому з номерами і лінією */
-.steps {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0 40px;
-  counter-reset: step;
-}
-
-.steps li {
-  position: relative;
-  padding-top: 36px;
-  counter-increment: step;
-}
-
-.steps li::before {
-  content: '';
-  position: absolute;
-  top: 6px;
-  left: 0;
-  right: -40px;
-  height: 3px;
-  border-radius: 3px;
-  background: var(--rule);
-}
-
-.steps li:last-child::before {
-  right: 0;
-}
-
-.steps li::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 15px;
-  height: 15px;
-  border-radius: 50%;
-  background: var(--c, var(--violet));
-  box-shadow: 0 0 0 5px var(--mist);
-}
-
-.steps li:nth-child(1) {
-  --c: #8c52fe;
-}
-
-.steps li:nth-child(2) {
-  --c: #c06fb0;
-}
-
-.steps li:nth-child(3) {
-  --c: #fc904f;
-}
-
-.steps__num::before {
-  content: counter(step);
-  display: block;
-  font-size: clamp(4rem, 8vw, 6.5rem);
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: -0.05em;
-  color: var(--c);
-}
-
-.steps h3 {
-  margin-top: 16px;
-  font-size: 1.3125rem;
-  font-weight: 700;
-  line-height: 1.25;
-  letter-spacing: -0.01em;
-}
-
-.steps p {
-  margin-top: 8px;
-  max-width: 24em;
-}
-
-@media (max-width: 760px) {
-  .sec__head {
-    grid-template-columns: 1fr;
-  }
-
-  .sec__head p {
-    justify-self: start;
-  }
-
-  .steps {
-    grid-template-columns: 1fr;
-  }
-
-  .steps li {
-    padding: 0 0 32px 36px;
-  }
-
-  .steps li:last-child {
-    padding-bottom: 0;
-  }
-
-  .steps li::before {
-    top: 6px;
-    bottom: -6px;
-    left: 6px;
-    right: auto;
-    width: 3px;
-    height: auto;
-  }
-
-  .steps li:last-child::before {
-    display: none;
-  }
-
-  .steps__num::before {
-    font-size: 3.5rem;
-  }
-
-  .steps h3 {
-    margin-top: 8px;
-  }
-}
-
-/* Контакти */
-.contact {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  padding: clamp(32px, 6vw, 88px);
-  border-radius: clamp(28px, 4vw, 56px);
-  color: #fff;
-  background: var(--night);
-}
-
-.contact::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background:
-    radial-gradient(55% 90% at 100% 100%, rgba(252, 144, 79, 0.85), transparent 70%),
-    radial-gradient(60% 90% at 0% 0%, rgba(140, 82, 254, 0.8), transparent 70%);
-}
-
-.contact {
-  container-type: inline-size;
-}
-
-.contact h2 {
-  font-size: clamp(1.5rem, 2.6vw, 2.25rem);
-  letter-spacing: -0.03em;
-}
-
-.bigphone {
-  display: block;
-  text-align: center;
-  margin-top: 16px;
-  font-size: clamp(2rem, 8.4vw, 7rem);
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: -0.045em;
-  color: #fff;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: color 0.2s ease;
-}
-
-/* Номер займає рівно всю ширину блоку: 100cqi = внутрішня ширина .contact,
-   9.62 = ширина цього номера в em (при letter-spacing −0.045em). */
-@supports (container-type: inline-size) {
-  .bigphone {
-    font-size: calc(100cqi / 9.62);
-  }
-}
-
-.bigphone:hover {
-  color: var(--orange);
-}
-
-.contact__row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: end;
-  gap: 32px;
-  margin-top: clamp(32px, 5vw, 64px);
-}
-
-@media (max-width: 980px) {
-  .contact__row {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-.where {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 14px 24px;
-}
-
-.contact address {
-  font-style: normal;
-  font-size: 1.125rem;
-  font-weight: 600;
-  line-height: 1.5;
-}
-
-.hours {
-  margin-top: 14px;
-  color: rgba(255, 255, 255, 0.82);
-}
-
-.socials {
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 20px 0 0;
-  padding: 0;
-}
-
-.where__map,
-.socials a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 0 18px;
-  border: 1.5px solid rgba(255, 255, 255, 0.4);
-  border-radius: 999px;
-  font-size: 0.9375rem;
-  font-weight: 700;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-}
-
-.where__map:hover,
-.socials a:hover {
-  border-color: #fff;
-  background: #fff;
-  color: var(--night);
-}
-
-.contact .actions {
-  margin-top: 0;
-}
-
-/* Футер */
-.foot {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 6px 24px;
-  padding-block: 32px 40px;
-  font-size: 0.9375rem;
-  color: #6b6f76;
-}
-
-.foot__links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 20px;
-}
-
-.foot__links a {
-  text-underline-offset: 4px;
-}
-
-.foot__links a:hover {
-  color: var(--violet-deep);
-}
-
-/* ───── Мобільний ───── */
+/* ───── Телефон і планшет ───── */
 
 @media (max-width: 860px) {
   .hero__grid {
-    grid-template-columns: 1fr;
-    gap: 40px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+    padding-block: 24px 0;
+  }
+
+  .hero__text {
+    padding-block: 8px 0;
+  }
+
+  .dial-box {
     min-height: 0;
-    padding-block: 124px 56px;
+    padding: 28px;
   }
 
   .dial {
-    width: min(300px, 72vw);
-  }
-
-  .hero::before {
-    background:
-      radial-gradient(90% 50% at 0% 0%, rgba(140, 82, 254, 0.55), transparent 70%),
-      radial-gradient(80% 45% at 50% 82%, color-mix(in oklab, var(--temp), transparent 30%), transparent 72%);
-  }
-
-  .hero::after {
-    -webkit-mask-image: radial-gradient(90% 45% at 50% 80%, #000 10%, transparent 75%);
-    mask-image: radial-gradient(90% 45% at 50% 80%, #000 10%, transparent 75%);
+    width: min(300px, 100%);
   }
 }
 
@@ -1312,13 +1297,8 @@ h2 {
     padding-inline: 12px;
   }
 
-  .actions .btn--hot {
+  .actions .btn--main {
     grid-column: 1 / -1;
-  }
-
-  .tags li {
-    font-size: 0.9375rem;
-    padding: 8px 14px;
   }
 }
 
@@ -1331,36 +1311,33 @@ h2 {
   place-items: center;
   padding: var(--pad);
   text-align: center;
-  color: #fff;
-  background:
-    radial-gradient(60% 60% at 15% 0%, rgba(140, 82, 254, 0.6), transparent 70%),
-    radial-gradient(50% 60% at 100% 100%, rgba(252, 144, 79, 0.55), transparent 70%),
-    var(--night);
 }
 
 .lost h1 {
-  margin: 0;
-  font-size: clamp(2rem, 6vw, 4rem);
+  font-size: clamp(1.75rem, 5vw, 3.25rem);
 }
 
 .lost p {
   margin: 20px 0 32px;
-  color: rgba(255, 255, 255, 0.82);
 }
 
+/* ───── Найвужчі телефони ───── */
+
 @media (max-width: 480px) {
-  .chip-ico {
-    width: 60px;
-    height: 60px;
-    border-radius: 18px;
+  .tile h3 {
+    min-width: 0;
+    font-size: clamp(0.875rem, 4.4vw, 1.125rem);
+  }
+}
+
+/* назва в шапці стає у два рядки, як у логотипі */
+@media (max-width: 380px) {
+  .brand {
+    white-space: normal;
+    line-height: 1.2;
   }
 
-  .chip-ico svg {
-    width: 34px;
-    height: 34px;
-  }
-
-  .tile__lead {
-    gap: 14px;
+  .brand img {
+    flex: none;
   }
 }
